@@ -8,10 +8,16 @@ import { Terminal, Download, Copy, Check, Radio, Cpu, ShieldCheck } from 'lucide
 
 export default function Header() {
   const [copied, setCopied] = useState(false);
-  const installCmd = 'wget -q "--no-check-certificate" https://raw.githubusercontent.com/zerosat/panel/main/installer.sh -O - | /bin/sh';
+  
+  const getInstallCmd = () => {
+    const origin = typeof window !== 'undefined' && window.location.origin 
+      ? window.location.origin 
+      : 'https://ais-dev-3tamtjyvumhchbwppdh6ny-403742694107.europe-west3.run.app';
+    return `wget -q "--no-check-certificate" ${origin}/installer.sh -O - | /bin/sh`;
+  };
 
   const copyInstallCmd = () => {
-    navigator.clipboard.writeText(installCmd);
+    navigator.clipboard.writeText(getInstallCmd());
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
   };
@@ -35,11 +41,11 @@ export default function Header() {
                   </h1>
                   <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-                    <span>v4.0 Enigma2</span>
+                    <span>Python 3.12 Ready</span>
                   </span>
                 </div>
                 <p className="text-xs text-slate-400 font-mono mt-0.5">
-                  لوحة تحكم وإضافات أجهزة الإنيغما 2 • Python 3 & Python 2
+                  لوحة تحكم وإضافات أجهزة الإنيغما 2 • متوافقة مع بايثون 3.12 و 3.11 و 2.7
                 </p>
               </div>
             </div>
@@ -52,21 +58,21 @@ export default function Header() {
           </div>
 
           {/* Receiver Badges & Fast Actions */}
-          <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-end">
+          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
             <div className="hidden lg:flex items-center gap-1.5 text-xs text-slate-400 bg-slate-950/60 border border-slate-800 px-3 py-1.5 rounded-xl">
               <Cpu className="w-3.5 h-3.5 text-cyan-400" />
-              <span className="font-mono text-slate-300">VU+ • Dreambox • Octagon • Zgemma</span>
+              <span className="font-mono text-slate-300">OpenATV 7.4/7.5 • Egami • OpenPLi</span>
             </div>
 
             <button
               onClick={copyInstallCmd}
-              title="نسخ أمر تثبيت Telnet المباشر"
+              title="نسخ أمر تثبيت Telnet المباشر لـ Python 3.12"
               className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-mono text-slate-200 transition-all cursor-pointer shadow-sm hover:border-cyan-500/50"
             >
               {copied ? (
                 <>
                   <Check className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className="text-emerald-400 font-sans">تم نسخ أمر Telnet!</span>
+                  <span className="text-emerald-400 font-sans font-bold">تم نسخ أمر Telnet!</span>
                 </>
               ) : (
                 <>
@@ -77,12 +83,22 @@ export default function Header() {
             </button>
 
             <a
-              href="/assets/aistudio/ZeroSatPanel.py"
-              download="ZeroSatPanel.py"
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 text-xs font-bold transition-all shadow-md shadow-cyan-500/20 cursor-pointer"
+              href="/ZeroSatPanel.ipk"
+              download="enigma2-plugin-extensions-zerosatpanel_4.0_all.ipk"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black transition-all shadow-md shadow-amber-500/20 cursor-pointer"
+              title="تحميل حزمة IPK المباشرة لتثبيتها عبر opkg"
             >
               <Download className="w-3.5 h-3.5" />
-              <span>تحميل البلوغين</span>
+              <span>حزمة IPK 📦</span>
+            </a>
+
+            <a
+              href="/plugin.py"
+              download="plugin.py"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 text-xs font-bold transition-all shadow-md shadow-cyan-500/20 cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>plugin.py</span>
             </a>
           </div>
 

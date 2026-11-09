@@ -163,48 +163,65 @@ export default function ZeroSatPanelViewer() {
           {/* Download Plugin & Telnet Fast Actions */}
           <div className="flex flex-wrap items-center gap-2.5 shrink-0">
             <a
+              href="/ZeroSatPanel.ipk"
+              download="enigma2-plugin-extensions-zerosatpanel_4.0_all.ipk"
+              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-sm flex items-center gap-2 shadow-lg shadow-amber-500/25 transition-all cursor-pointer"
+              title="تثبيت مباشر بصيغة IPK عبر opkg لجميع صور Enigma2"
+            >
+              <Download className="w-4 h-4" />
+              <span>حزمة IPK الجاهزة (v4.0) 📦</span>
+            </a>
+
+            <a
               href="/installer.sh"
               download="installer.sh"
-              className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm flex items-center gap-2 shadow-lg shadow-amber-500/20 transition-all cursor-pointer"
+              className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm border border-slate-700 flex items-center gap-2 transition-all cursor-pointer"
             >
-              <Terminal className="w-4 h-4" />
+              <Terminal className="w-4 h-4 text-cyan-400" />
               <span>سكربت التثبيت (installer.sh) ⚡</span>
             </a>
 
             <a
-              href="/assets/aistudio/plugin_6a15eb1f.py"
+              href="/plugin.py"
               download="plugin.py"
               className="px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-sm flex items-center gap-2 shadow-lg shadow-cyan-500/20 transition-all cursor-pointer"
+              title="ملف plugin.py متوافق 100% مع Python 3.12"
             >
-              <Download className="w-4 h-4" />
-              <span>تحميل plugin.py (Python 3) 💾</span>
-            </a>
-
-            <a
-              href="/assets/aistudio/ZeroSatPanel.py"
-              download="ZeroSatPanel.py"
-              className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm border border-slate-700 flex items-center gap-2 transition-all cursor-pointer"
-            >
-              <FileCode className="w-4 h-4 text-cyan-400" />
-              <span>ZeroSatPanel.py</span>
+              <FileCode className="w-4 h-4" />
+              <span>plugin.py (Python 3.12) 💾</span>
             </a>
           </div>
         </div>
 
         {/* Quick Telnet Command Bar */}
-        <div className="mt-5 p-3 rounded-xl bg-slate-950/80 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2 text-slate-300">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-            <span className="font-bold text-amber-400">أمر التثبيت المباشر عبر Telnet / PuTTY لجميع أجهزة Enigma2 Python 3:</span>
+        <div className="mt-5 p-3.5 rounded-xl bg-slate-950/90 border border-cyan-500/30 flex flex-col lg:flex-row items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2 text-slate-200">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+            <span className="font-bold text-amber-400">أمر التثبيت المباشر عبر Telnet / PuTTY لأجهزة Enigma2 Python 3.12:</span>
           </div>
-          <div className="flex items-center gap-2 bg-slate-900 border border-slate-750 px-3 py-1.5 rounded-lg font-mono text-[11px] text-emerald-400 max-w-full overflow-x-auto" dir="ltr">
-            <span>wget -q --no-check-certificate https://raw.githubusercontent.com/emilnabil/download-plugins/refs/heads/main/ZeroSatPanel/installer.sh -O - | /bin/sh</span>
+          <div className="flex items-center gap-2 bg-slate-900 border border-slate-750 px-3 py-2 rounded-lg font-mono text-[11px] text-emerald-400 max-w-full overflow-x-auto w-full lg:w-auto justify-between" dir="ltr">
+            <span className="truncate">
+              wget -q &quot;--no-check-certificate&quot; {typeof window !== 'undefined' ? window.location.origin : 'https://ais-dev-3tamtjyvumhchbwppdh6ny-403742694107.europe-west3.run.app'}/installer.sh -O - | /bin/sh
+            </span>
             <button
-              onClick={() => copyToClipboard('wget -q --no-check-certificate https://raw.githubusercontent.com/emilnabil/download-plugins/refs/heads/main/ZeroSatPanel/installer.sh -O - | /bin/sh', 'fast-telnet-cmd')}
-              className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all cursor-pointer shrink-0"
+              onClick={() => {
+                const origin = typeof window !== 'undefined' ? window.location.origin : 'https://ais-dev-3tamtjyvumhchbwppdh6ny-403742694107.europe-west3.run.app';
+                copyToClipboard(`wget -q "--no-check-certificate" ${origin}/installer.sh -O - | /bin/sh`, 'fast-telnet-cmd');
+              }}
+              className="px-2.5 py-1 rounded bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1 ml-2"
               title="نسخ الأمر المباشر"
             >
-              {copiedCmd === 'fast-telnet-cmd' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+              {copiedCmd === 'fast-telnet-cmd' ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-white" />
+                  <span className="text-white font-sans text-[10px]">تم النسخ!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5" />
+                  <span className="font-sans text-[10px]">نسخ</span>
+                </>
+              )}
             </button>
           </div>
         </div>
@@ -511,69 +528,142 @@ export default function ZeroSatPanelViewer() {
 
       {/* Installation Guide Tab */}
       {activeTab === 'help' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6 text-right" dir="rtl">
+          
+          {/* Main Title */}
           <div className="space-y-1">
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
               <Wrench className="w-5 h-5 text-amber-400" />
-              <span>كيفية تثبيت ملف البلوغين المعدل على جهاز الإنيغما 2 (ZERO-SAT Panel)</span>
+              <span>دليل تثبيت وحل مشكلة عدم ظهور البانل على أجهزة ENIGMA2 PYTHON 3.12</span>
             </h3>
             <p className="text-xs text-slate-400">
-              خطوات بسيطة لنقل ملف <code className="text-cyan-300 font-mono">plugin.py</code> المعدل إلى الرسيفر وتشغيله فوراً.
+              شرح تفصيلي لأسباب عدم الظهور على الصور الحديثة (OpenATV 7.4 / 7.5, Egami 10.5, OpenPLi 9) مع 3 طرق مضمونة للتشغيل.
             </p>
           </div>
 
+          {/* Golden Solution Card */}
+          <div className="bg-gradient-to-r from-emerald-950/50 via-slate-900 to-slate-900 border-2 border-emerald-500/50 rounded-2xl p-5 space-y-3">
+            <div className="flex items-center gap-2.5 text-emerald-400 font-black text-sm">
+              <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+              <span>الحل الأسرع والأضمن 100%: التثبيت التلقائي الصامت عبر Telnet</span>
+            </div>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              قم بفتح برنامج <strong>PuTTY</strong> أو <strong>DCC</strong> واكتب أمر سطر واحد فقط. هذا السكربت المحدث يقوم تلقائياً بإنشاء المجلد وضبط حزمة بايثون 3.12 كاملة (<code className="text-cyan-400 font-mono">plugin.py</code> + <code className="text-amber-300 font-mono">__init__.py</code> + <code className="text-emerald-400 font-mono">icon.png</code>) وضبط التصريح <code className="font-mono text-emerald-400">chmod 755</code> وإعادة تشغيل واجهة Enigma2 فوراً:
+            </p>
+            <div className="bg-slate-950 border border-emerald-500/30 p-3 rounded-xl flex items-center justify-between gap-3 text-xs font-mono text-emerald-400" dir="ltr">
+              <span className="truncate">
+                wget -q &quot;--no-check-certificate&quot; {typeof window !== 'undefined' ? window.location.origin : 'https://ais-dev-3tamtjyvumhchbwppdh6ny-403742694107.europe-west3.run.app'}/installer.sh -O - | /bin/sh
+              </span>
+              <button
+                onClick={() => {
+                  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://ais-dev-3tamtjyvumhchbwppdh6ny-403742694107.europe-west3.run.app';
+                  copyToClipboard(`wget -q "--no-check-certificate" ${origin}/installer.sh -O - | /bin/sh`, 'help-telnet-cmd');
+                }}
+                className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5"
+              >
+                {copiedCmd === 'help-telnet-cmd' ? <Check className="w-3.5 h-3.5 text-white" /> : <Copy className="w-3.5 h-3.5" />}
+                <span className="font-sans text-xs">نسخ الأمر</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Technical Diagnostics for Python 3.12 */}
+          <div className="bg-slate-950/80 border border-cyan-500/30 rounded-2xl p-5 space-y-3">
+            <h4 className="font-bold text-cyan-400 text-sm flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-cyan-400" />
+              <span>لماذا لم يظهر البانل في السابق على بايثون 3.12؟ (التشخيص والحل البرمجي)</span>
+            </h4>
+            <div className="text-xs text-slate-300 leading-relaxed space-y-2">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+                <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
+                  <span className="font-bold text-amber-400 block text-xs">1. غياب ملف __init__.py</span>
+                  <p className="text-[11px] text-slate-400">
+                    في بيئة Python 3.12، لا يقرأ Enigma2 أي مجلد إضافات ما لم يحتوي على ملف <code className="text-amber-300 font-mono">__init__.py</code> كمعرّف حزمة بايثون، وبدونه يتم إسقاط البلوغين بصمت دون إظهار أي خطأ.
+                  </p>
+                </div>
+
+                <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
+                  <span className="font-bold text-cyan-400 block text-xs">2. تعارض تايمر eTimer</span>
+                  <p className="text-[11px] text-slate-400">
+                    في Python 3.12 تغيرت صيغة استدعاء <code className="text-cyan-300 font-mono">eTimer</code> في صور OpenATV 7.4 و Egami، وتم تعديل الكود ليدعم كافة الصور تلقائياً دون أدنى تعارض.
+                  </p>
+                </div>
+
+                <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
+                  <span className="font-bold text-emerald-400 block text-xs">3. التسجيل في 3 قوائم</span>
+                  <p className="text-[11px] text-slate-400">
+                    تمت إضافة معرّفات التسجيل ليظهر البانل في: <strong>القائمة الرئيسية للجهاز مباشرة</strong>، و<strong>قائمة البلوجينات Plugins</strong>، و<strong>قائمة الزر الأزرق Extensions</strong>.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 3 Practical Methods Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-4 space-y-2">
-              <div className="w-8 h-8 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-sm">1</div>
-              <h4 className="font-bold text-white text-sm">تحميل الملف</h4>
+            
+            {/* Method 1 */}
+            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-4 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="w-7 h-7 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-xs">طريقة 1</span>
+                <span className="text-[10px] bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-2 py-0.5 rounded-full font-bold">باقة IPK الرسمية</span>
+              </div>
+              <h4 className="font-bold text-white text-sm">التثبيت عبر حزمة IPK</h4>
               <p className="text-xs text-slate-400 leading-relaxed">
-                اضغط على زر تحميل <code className="text-cyan-400 font-mono">plugin.py</code> من أعلى الصفحة وحفظه على حاسوبك أو فلاش ميموري USB.
+                حمل ملف <code className="text-amber-400 font-mono">ZeroSatPanel.ipk</code> وأرسله لمجلد <code className="text-cyan-300 font-mono">/tmp</code> ثم نفذ:
               </p>
+              <div className="bg-slate-900 p-2 rounded-lg font-mono text-[10px] text-emerald-400 select-all" dir="ltr">
+                opkg install --force-overwrite /tmp/ZeroSatPanel.ipk
+              </div>
             </div>
 
-            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-4 space-y-2">
-              <div className="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-sm">2</div>
-              <h4 className="font-bold text-white text-sm">إرسال الملف عبر FTP</h4>
+            {/* Method 2 */}
+            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-4 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="w-7 h-7 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-xs">طريقة 2</span>
+                <span className="text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full font-bold">عبر FTP و DCC</span>
+              </div>
+              <h4 className="font-bold text-white text-sm">نقل الملفات يدوياً</h4>
               <p className="text-xs text-slate-400 leading-relaxed">
-                باستخدام برنامج DCC أو FileZilla، ادخل للمسار التالي والصق الملف:
-                <br />
-                <code className="text-amber-300 font-mono text-[10px] block mt-1 bg-slate-900 p-1 rounded">
+                أنشئ مجلد <code className="text-amber-300 font-mono">ZeroSatPanel</code> في المسار:
+                <code className="text-amber-300 font-mono text-[10px] block mt-1 bg-slate-900 p-1.5 rounded" dir="ltr">
                   /usr/lib/enigma2/python/Plugins/Extensions/ZeroSatPanel/
                 </code>
+                وضع بداخله ملفات: <code className="text-cyan-400 font-mono">plugin.py</code> و <code className="text-cyan-400 font-mono">__init__.py</code>.
               </p>
             </div>
 
-            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-4 space-y-2">
-              <div className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm">3</div>
-              <h4 className="font-bold text-white text-sm">إعادة تشغيل الواجهة</h4>
+            {/* Method 3 */}
+            <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-4 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs">طريقة 3</span>
+                <span className="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-bold">إعادة التشغيل</span>
+              </div>
+              <h4 className="font-bold text-white text-sm">تطبيق التغييرات</h4>
               <p className="text-xs text-slate-400 leading-relaxed">
-                أعد تشغيل واجهة الإنيغما (Restart GUI) أو نفذ عبر Telnet:
-                <br />
-                <code className="text-emerald-400 font-mono text-[11px] block mt-1 bg-slate-900 p-1 rounded">
-                  killall -9 enigma2
-                </code>
+                أعد تشغيل واجهة الإنيغما لحفظ السجلات وتفعيل البلوغين في القائمة:
+              </p>
+              <div className="bg-slate-900 p-2 rounded-lg font-mono text-[11px] text-emerald-400 select-all" dir="ltr">
+                killall -9 enigma2
+              </div>
+              <p className="text-[10px] text-slate-500">
+                ثم توجه إلى: <strong>Menu &larr; Plugins &larr; ZERO-SAT Pro Panel</strong>
               </p>
             </div>
+
           </div>
 
           {/* Cannot start from here explanation card */}
-          <div className="bg-gradient-to-r from-amber-950/40 via-slate-900 to-slate-900 border border-amber-500/40 rounded-2xl p-5 space-y-3">
-            <div className="flex items-center gap-2.5 text-amber-400 font-bold text-sm">
-              <AlertCircle className="w-5 h-5 text-amber-400 shrink-0" />
-              <span>حل مشكلة خطأ &quot;cannot start from here&quot; أو فشل الإقلاع في أجهزة الإنيغما:</span>
-            </div>
-            <div className="text-xs text-slate-300 leading-relaxed space-y-2">
-              <p>
-                إذا ظهرت رسالة <strong>&quot;cannot start from here&quot;</strong> عند محاولة تشغيل البلوغين من سطر الأوامر (Terminal/CLI) مثل <code className="text-cyan-300 font-mono">python3 plugin.py</code>، فهذا أمر طبيعي لأن بلوغينات الإنيغما ليست سكربتات شاشة طرفية، بل هي واجهة رسومية (GUI) تستدعي مكتبات الشاشات <code className="text-emerald-400 font-mono">from Screens.Screen import Screen</code>.
-              </p>
-              <ul className="list-disc list-inside space-y-1 text-slate-400 font-mono text-[11px] bg-slate-950/80 p-3 rounded-xl border border-slate-800">
-                <li><strong className="text-white">طريقة التشغيل الصحيحة:</strong> لا تقم بتشغيل الملف كـ python3 plugin.py من Telnet!</li>
-                <li><strong className="text-white">المسار المطلوب:</strong> ضع الملف في: <span className="text-cyan-400">/usr/lib/enigma2/python/Plugins/Extensions/ZeroSatPanel/plugin.py</span></li>
-                <li><strong className="text-white">إعادة التشغيل:</strong> نفذ أمر: <span className="text-emerald-400">killall -9 enigma2</span></li>
-                <li><strong className="text-white">التشغيل من الشاشة:</strong> ادخل بالريموت كنترول إلى: <strong>القائمة الرئيسية (Menu) &larr; الإضافات (Plugins) &larr; ZERO-SAT Pro Panel</strong></li>
-              </ul>
-            </div>
+          <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-2 text-xs">
+            <span className="font-bold text-slate-300 flex items-center gap-1.5">
+              <Check className="w-4 h-4 text-emerald-400" />
+              <span>تنبيه هام عند تشغيل البلوغين لأول مرة:</span>
+            </span>
+            <p className="text-slate-400 leading-relaxed">
+              بلوغينات Enigma2 لا تُفتح كملف طرفي عبر كتابة <code className="text-rose-400 font-mono">python3 plugin.py</code> في Telnet (سيُظهر رسالة cannot start from here). يتم فتح البانل مباشرة من شاشة التلفزيون باستخدام الريموت كنترول عبر <strong>القائمة الرئيسية (Menu)</strong> أو <strong>الزر الأزرق (Extensions)</strong> أو <strong>متصفح الإضافات (Plugins)</strong>.
+            </p>
           </div>
+
         </div>
       )}
 

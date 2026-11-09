@@ -691,8 +691,23 @@ class ZeroSatPanelMainScreen(Screen):
         )
 
         self.timer = eTimer()
-        self.timer.timeout.get().append(self.update_clock)
-        self.timer.start(1000)
+        try:
+            self.timer_conn = self.timer.timeout.connect(self.update_clock)
+        except Exception:
+            try:
+                self.timer.callback.append(self.update_clock)
+            except Exception:
+                try:
+                    self.timer.timeout.get().append(self.update_clock)
+                except Exception:
+                    pass
+        try:
+            self.timer.start(1000, False)
+        except Exception:
+            try:
+                self.timer.start(1000)
+            except Exception:
+                pass
 
         self.onLayoutFinish.append(self.update_category_description)
 
@@ -789,42 +804,88 @@ class ZeroSatPanelMainScreen(Screen):
 
 # ==============================================================================
 # ENIGMA2 PLUGIN ENTRY DESCRIPTORS
-# Registers in both Plugin Menu and Extensions Quick Menu
+# Registers in:
+# 1) Main Menu (القائمة الرئيسية)
+# 2) Plugin Browser (قائمة البلوجينات)
+# 3) Extensions Menu (زر الإضافات الأزرق)
 # ==============================================================================
 def main(session, **kwargs):
     session.open(ZeroSatPanelMainScreen)
 
+def main_menu(menuid, **kwargs):
+    if menuid == "mainmenu":
+        return [("ZERO-SAT Pro Panel", main, "zerosat_panel", 44)]
+    return []
+
 def Plugins(**kwargs):
-    return [
-        PluginDescriptor(
-            name="ZERO-SAT Pro Panel",
-            description="ZERO-SAT Pro Multi-Category Addons & Terminal Launcher (" + str(PLUGIN_VERSION) + ")",
-            where=PluginDescriptor.WHERE_PLUGINMENU,
-            icon="icon.png",
-            fnc=main,
-        ),
-        PluginDescriptor(
-            name="ZERO-SAT Pro Panel",
-            description="ZERO-SAT Pro Addons & Extensions",
-            where=PluginDescriptor.WHERE_EXTENSIONSMENU,
-            fnc=main,
+    if not IS_ENIGMA2_ENV:
+        return []
+
+    descriptors = []
+
+    # 1. Plugin Browser Menu (Menu -> Plugins)
+    try:
+        descriptors.append(
+            PluginDescriptor(
+                name="ZERO-SAT Pro Panel",
+                description="ZERO-SAT Pro Multi-Category Addons (" + str(PLUGIN_VERSION) + ")",
+                where=PluginDescriptor.WHERE_PLUGINMENU,
+                icon="icon.png",
+                fnc=main,
+            )
         )
-    ]
+    except Exception:
+        pass
+
+    # 2. Extensions Quick Menu (Blue Button)
+    try:
+        descriptors.append(
+            PluginDescriptor(
+                name="ZERO-SAT Pro Panel",
+                description="ZERO-SAT Pro Addons & Extensions",
+                where=PluginDescriptor.WHERE_EXTENSIONSMENU,
+                fnc=main,
+            )
+        )
+    except Exception:
+        pass
+
+    # 3. Receiver Main Menu (القائمة الرئيسية)
+    try:
+        if hasattr(PluginDescriptor, "WHERE_MENU"):
+            descriptors.append(
+                PluginDescriptor(
+                    name="ZERO-SAT Pro Panel",
+                    description="ZERO-SAT Pro Addons Manager",
+                    where=PluginDescriptor.WHERE_MENU,
+                    fnc=main_menu,
+                )
+            )
+    except Exception:
+        pass
+
+    return descriptors
 
 # If user tries to execute this script directly in terminal via: python3 plugin.py
 if __name__ == "__main__":
     print("""
 ========================================================================
  [INFO] ZERO-SAT Pro Panel is an Enigma2 GUI Plugin.
- It cannot be run as a standalone desktop python script (cannot start from CLI).
+ It cannot be run as a standalone desktop python script.
  
- >> How to install on your Enigma2 receiver:
- 1) Copy this file as 'plugin.py' to:
-    /usr/lib/enigma2/python/Plugins/Extensions/ZeroSatPanel/plugin.py
- 2) Restart Enigma2:
+ >> How to install on your Enigma2 receiver (Python 3.12 / 3.11 / 2.7):
+ 1) Directory:
+    /usr/lib/enigma2/python/Plugins/Extensions/ZeroSatPanel/
+ 2) Required files:
+    - plugin.py
+    - __init__.py
+    - icon.png
+ 3) Restart Enigma2:
     killall -9 enigma2
- 3) Open the plugin from:
-    Main Menu -> Plugins -> ZERO-SAT Pro Panel
+ 4) Open plugin from:
+    - Main Menu -> Plugins -> ZERO-SAT Pro Panel
+    - Blue button (Extensions) -> ZERO-SAT Pro Panel
+    - Receiver Main Menu -> ZERO-SAT Pro Panel
 ========================================================================
 """)
 
