@@ -1,0 +1,25 @@
+{
+  "short_name": "TAOUFIK TV",
+  "name": "TAOUFIK TV - البث المباشر التفاعلي",
+  "description": "تطبيق البث المباشر للقنوات الرياضية، الإخبارية والإسلامية، ومباريات اليوم مع منشئ تحليلات تكتيكية ذكي",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3004/3004231.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3004/3004231.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#020617",
+  "theme_color": "#f59e0b",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "categories": ["sports", "entertainment", "news"]
+}
