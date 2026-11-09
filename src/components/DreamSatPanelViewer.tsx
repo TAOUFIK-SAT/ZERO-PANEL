@@ -193,36 +193,70 @@ export default function ZeroSatPanelViewer() {
           </div>
         </div>
 
-        {/* Quick Telnet Command Bar */}
-        <div className="mt-5 p-3.5 rounded-xl bg-slate-950/90 border border-cyan-500/30 flex flex-col lg:flex-row items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2 text-slate-200">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-            <span className="font-bold text-amber-400">أمر التثبيت المباشر عبر Telnet / PuTTY لأجهزة Enigma2 Python 3.12:</span>
+        {/* Quick Telnet Command Bar: GitHub & Local Mode */}
+        <div className="mt-5 p-3.5 rounded-xl bg-slate-950/90 border border-cyan-500/30 space-y-2.5 text-xs">
+          {/* GitHub Cloud Command */}
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-2.5">
+            <div className="flex items-center gap-2 text-slate-200 shrink-0">
+              <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+              <span className="font-bold text-cyan-400">1. التثبيت السحابي المباشر عبر GitHub (TAOUFIK-SAT):</span>
+            </div>
+            <div className="flex items-center gap-2 bg-slate-900 border border-slate-750 px-3 py-1.5 rounded-lg font-mono text-[11px] text-emerald-400 max-w-full overflow-x-auto w-full lg:w-auto justify-between" dir="ltr">
+              <span className="truncate">
+                wget -q &quot;--no-check-certificate&quot; https://raw.githubusercontent.com/TAOUFIK-SAT/download-plugins/main/ZERO-PANEL/installer.sh -O - | /bin/sh
+              </span>
+              <button
+                onClick={() => {
+                  copyToClipboard('wget -q "--no-check-certificate" https://raw.githubusercontent.com/TAOUFIK-SAT/download-plugins/main/ZERO-PANEL/installer.sh -O - | /bin/sh', 'github-telnet-cmd');
+                }}
+                className="px-2.5 py-1 rounded bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1 ml-2"
+                title="نسخ أمر GitHub المباشر"
+              >
+                {copiedCmd === 'github-telnet-cmd' ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-white" />
+                    <span className="text-white font-sans text-[10px]">تم النسخ!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5" />
+                    <span className="font-sans text-[10px]">نسخ</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
-          <div className="flex items-center gap-2 bg-slate-900 border border-slate-750 px-3 py-2 rounded-lg font-mono text-[11px] text-emerald-400 max-w-full overflow-x-auto w-full lg:w-auto justify-between" dir="ltr">
-            <span className="truncate">
-              wget -q &quot;--no-check-certificate&quot; {typeof window !== 'undefined' ? window.location.origin : 'https://ais-dev-3tamtjyvumhchbwppdh6ny-403742694107.europe-west3.run.app'}/installer.sh -O - | /bin/sh
-            </span>
-            <button
-              onClick={() => {
-                const origin = typeof window !== 'undefined' ? window.location.origin : 'https://ais-dev-3tamtjyvumhchbwppdh6ny-403742694107.europe-west3.run.app';
-                copyToClipboard(`wget -q "--no-check-certificate" ${origin}/installer.sh -O - | /bin/sh`, 'fast-telnet-cmd');
-              }}
-              className="px-2.5 py-1 rounded bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1 ml-2"
-              title="نسخ الأمر المباشر"
-            >
-              {copiedCmd === 'fast-telnet-cmd' ? (
-                <>
-                  <Check className="w-3.5 h-3.5 text-white" />
-                  <span className="text-white font-sans text-[10px]">تم النسخ!</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="w-3.5 h-3.5" />
-                  <span className="font-sans text-[10px]">نسخ</span>
-                </>
-              )}
-            </button>
+
+          {/* Local Mode Command */}
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-2.5 pt-2 border-t border-slate-850">
+            <div className="flex items-center gap-2 text-slate-200 shrink-0">
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+              <span className="font-bold text-amber-400">2. التشغيل لوكال (Local Git Clone) على الرسيفر:</span>
+            </div>
+            <div className="flex items-center gap-2 bg-slate-900 border border-slate-750 px-3 py-1.5 rounded-lg font-mono text-[11px] text-amber-300 max-w-full overflow-x-auto w-full lg:w-auto justify-between" dir="ltr">
+              <span className="truncate">
+                cd /tmp && git clone https://github.com/TAOUFIK-SAT/download-plugins.git && cd download-plugins/ZERO-PANEL && chmod +x installer.sh && ./installer.sh
+              </span>
+              <button
+                onClick={() => {
+                  copyToClipboard('cd /tmp && git clone https://github.com/TAOUFIK-SAT/download-plugins.git && cd download-plugins/ZERO-PANEL && chmod +x installer.sh && ./installer.sh', 'local-git-cmd');
+                }}
+                className="px-2.5 py-1 rounded bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1 ml-2"
+                title="نسخ أمر التشغيل لوكال"
+              >
+                {copiedCmd === 'local-git-cmd' ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-slate-950" />
+                    <span className="text-slate-950 font-sans text-[10px]">تم النسخ!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5" />
+                    <span className="font-sans text-[10px]">نسخ</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -541,29 +575,63 @@ export default function ZeroSatPanelViewer() {
             </p>
           </div>
 
-          {/* Golden Solution Card */}
-          <div className="bg-gradient-to-r from-emerald-950/50 via-slate-900 to-slate-900 border-2 border-emerald-500/50 rounded-2xl p-5 space-y-3">
-            <div className="flex items-center gap-2.5 text-emerald-400 font-black text-sm">
-              <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-              <span>الحل الأسرع والأضمن 100%: التثبيت التلقائي الصامت عبر Telnet</span>
-            </div>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              قم بفتح برنامج <strong>PuTTY</strong> أو <strong>DCC</strong> واكتب أمر سطر واحد فقط. هذا السكربت المحدث يقوم تلقائياً بإنشاء المجلد وضبط حزمة بايثون 3.12 كاملة (<code className="text-cyan-400 font-mono">plugin.py</code> + <code className="text-amber-300 font-mono">__init__.py</code> + <code className="text-emerald-400 font-mono">icon.png</code>) وضبط التصريح <code className="font-mono text-emerald-400">chmod 755</code> وإعادة تشغيل واجهة Enigma2 فوراً:
-            </p>
-            <div className="bg-slate-950 border border-emerald-500/30 p-3 rounded-xl flex items-center justify-between gap-3 text-xs font-mono text-emerald-400" dir="ltr">
-              <span className="truncate">
-                wget -q &quot;--no-check-certificate&quot; {typeof window !== 'undefined' ? window.location.origin : 'https://ais-dev-3tamtjyvumhchbwppdh6ny-403742694107.europe-west3.run.app'}/installer.sh -O - | /bin/sh
-              </span>
-              <button
-                onClick={() => {
-                  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://ais-dev-3tamtjyvumhchbwppdh6ny-403742694107.europe-west3.run.app';
-                  copyToClipboard(`wget -q "--no-check-certificate" ${origin}/installer.sh -O - | /bin/sh`, 'help-telnet-cmd');
-                }}
-                className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5"
+          {/* Golden Solution Card: GitHub & Local Mode */}
+          <div className="bg-gradient-to-r from-emerald-950/50 via-slate-900 to-slate-900 border-2 border-emerald-500/50 rounded-2xl p-5 space-y-4">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2.5 text-emerald-400 font-black text-sm">
+                <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                <span>تشغيل وتثبيت البانل لوكال (Local) وعبر GitHub (TAOUFIK-SAT)</span>
+              </div>
+              <a
+                href="/ZERO-PANEL-GitHub.zip"
+                download="ZERO-PANEL-GitHub.zip"
+                className="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 transition-all shadow-md shadow-emerald-500/20"
               >
-                {copiedCmd === 'help-telnet-cmd' ? <Check className="w-3.5 h-3.5 text-white" /> : <Copy className="w-3.5 h-3.5" />}
-                <span className="font-sans text-xs">نسخ الأمر</span>
-              </button>
+                <Download className="w-3.5 h-3.5" />
+                <span>تحميل حزمة GitHub الكاملة (ZIP) 📦</span>
+              </a>
+            </div>
+
+            {/* Option A: GitHub Cloud */}
+            <div className="space-y-1.5 bg-slate-950/80 p-3.5 rounded-xl border border-cyan-500/30">
+              <span className="font-bold text-cyan-400 text-xs block">
+                أ) التثبيت السحابي المباشر عبر مستودعك في GitHub:
+              </span>
+              <div className="bg-slate-900 border border-slate-750 p-2.5 rounded-lg flex items-center justify-between gap-3 text-xs font-mono text-emerald-400" dir="ltr">
+                <span className="truncate">
+                  wget -q &quot;--no-check-certificate&quot; https://raw.githubusercontent.com/TAOUFIK-SAT/download-plugins/main/ZERO-PANEL/installer.sh -O - | /bin/sh
+                </span>
+                <button
+                  onClick={() => {
+                    copyToClipboard('wget -q "--no-check-certificate" https://raw.githubusercontent.com/TAOUFIK-SAT/download-plugins/main/ZERO-PANEL/installer.sh -O - | /bin/sh', 'help-github-cmd');
+                  }}
+                  className="px-2.5 py-1 rounded bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1"
+                >
+                  {copiedCmd === 'help-github-cmd' ? <Check className="w-3.5 h-3.5 text-white" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span className="font-sans text-xs">نسخ</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Option B: Local Mode */}
+            <div className="space-y-1.5 bg-slate-950/80 p-3.5 rounded-xl border border-amber-500/30">
+              <span className="font-bold text-amber-400 text-xs block">
+                ب) التشغيل لوكال محلياً (Local Git Clone) على الرسيفر:
+              </span>
+              <div className="bg-slate-900 border border-slate-750 p-2.5 rounded-lg flex items-center justify-between gap-3 text-xs font-mono text-amber-300" dir="ltr">
+                <span className="truncate">
+                  cd /tmp && git clone https://github.com/TAOUFIK-SAT/download-plugins.git && cd download-plugins/ZERO-PANEL && chmod +x installer.sh && ./installer.sh
+                </span>
+                <button
+                  onClick={() => {
+                    copyToClipboard('cd /tmp && git clone https://github.com/TAOUFIK-SAT/download-plugins.git && cd download-plugins/ZERO-PANEL && chmod +x installer.sh && ./installer.sh', 'help-local-cmd');
+                  }}
+                  className="px-2.5 py-1 rounded bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1"
+                >
+                  {copiedCmd === 'help-local-cmd' ? <Check className="w-3.5 h-3.5 text-slate-950" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span className="font-sans text-xs text-slate-950">نسخ</span>
+                </button>
+              </div>
             </div>
           </div>
 
