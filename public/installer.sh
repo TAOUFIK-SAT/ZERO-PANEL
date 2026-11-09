@@ -1,16 +1,16 @@
 #!/bin/sh
 # ==============================================================================
-# DreamSat Pro Panel Installer for Enigma2 (Python 3 & Python 2)
+# ZERO-SAT Pro Panel Installer for Enigma2 (Python 3 & Python 2)
 # Supported Images: OpenATV, OpenPLi, Egami, BlackHole, OpenBH, PurE2, VTi
 # ==============================================================================
 echo ""
 echo "#################################################################"
-echo "#               DreamSat Pro Panel v4.0 Installer               #"
+echo "#               ZERO-SAT Pro Panel v4.0 Installer               #"
 echo "#                   Python 3 & Python 2 Ready                   #"
 echo "#################################################################"
 echo ""
 
-PLUGIN_PATH="/usr/lib/enigma2/python/Plugins/Extensions/DreamSatPanel"
+PLUGIN_PATH="/usr/lib/enigma2/python/Plugins/Extensions/ZeroSatPanel"
 
 echo "[*] Checking Enigma2 Python version..."
 python -c "import sys; print('Python version: ' + sys.version)" 2>/dev/null || python3 -c "import sys; print('Python version: ' + sys.version)"
@@ -21,9 +21,9 @@ mkdir -p
 echo "[*] Downloading plugin components..."
 # Try curl or wget
 if command -v curl >/dev/null 2>&1; then
-    curl -k -s -L "https://raw.githubusercontent.com/emilnabil/download-plugins/refs/heads/main/DreamSatPanel/plugin.py" -o "/plugin.py"
+    curl -k -s -L "https://raw.githubusercontent.com/emilnabil/download-plugins/refs/heads/main/ZeroSatPanel/plugin.py" -o "/plugin.py"
 else
-    wget -q --no-check-certificate "https://raw.githubusercontent.com/emilnabil/download-plugins/refs/heads/main/DreamSatPanel/plugin.py" -O "/plugin.py"
+    wget -q --no-check-certificate "https://raw.githubusercontent.com/emilnabil/download-plugins/refs/heads/main/ZeroSatPanel/plugin.py" -O "/plugin.py"
 fi
 
 # Set permissions
@@ -39,7 +39,7 @@ python3 -m py_compile /plugin.py 2>/dev/null || python -m py_compile /plugin.py 
 
 echo ""
 echo "#################################################################"
-echo "#            DreamSat Pro Panel Installed Successfully!         #"
+echo "#            ZERO-SAT Pro Panel Installed Successfully!         #"
 echo "#              Restarting Enigma2 GUI in 3 seconds...           #"
 echo "#################################################################"
 echo ""

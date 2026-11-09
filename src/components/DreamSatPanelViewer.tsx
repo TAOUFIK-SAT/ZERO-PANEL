@@ -48,7 +48,7 @@ const CATEGORY_LIST = [
   { id: 'images', name: 'Receiver Images & Flash', english: 'Flash Online Images', arabic: 'روابط تحميل وتثبيت صور الفلاش الخام', icon: FolderGit2, count: ENIGMA_PLUGINS.filter(p => p.category === 'images').length },
 ];
 
-export default function DreamSatPanelViewer() {
+export default function ZeroSatPanelViewer() {
   const [selectedCategory, setSelectedCategory] = useState<string>('iptv');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'panel' | 'code' | 'help'>('panel');
@@ -89,16 +89,16 @@ export default function DreamSatPanelViewer() {
     setExitCode(null);
     setTerminalLogs([
       `======================================================================`,
-      `   DreamSat Pro Live Terminal Console - Enigma2 Multi-Installer`,
+      `   ZERO-SAT Pro Live Terminal Console - Enigma2 Multi-Installer`,
       `======================================================================`,
       `[RECEIVER] Model: VU+ Duo 4K SE / Dreambox ONE / Zgemma H9`,
       `[IMAGE] OpenATV 7.4 / OpenPLi 9.0 / Egami 10.5 (Python 3.11)`,
       `[TARGET] ${item.name} (${item.categoryName})`,
       `[COMMAND] # ${item.command}`,
       `----------------------------------------------------------------------`,
-      `[DreamSat-Terminal] Spawning eConsoleAppContainer sub-process...`,
-      `[DreamSat-Terminal] Working directory: /tmp`,
-      `[DreamSat-Terminal] Initializing network socket connection...`,
+      `[ZERO-SAT-Terminal] Spawning eConsoleAppContainer sub-process...`,
+      `[ZERO-SAT-Terminal] Working directory: /tmp`,
+      `[ZERO-SAT-Terminal] Initializing network socket connection...`,
     ]);
 
     // Simulate realistic Enigma2 execution stream
@@ -148,7 +148,7 @@ export default function DreamSatPanelViewer() {
               </span>
               <div>
                 <h2 className="text-2xl font-black text-white flex items-center gap-2">
-                  بانل دريم سات الاحترافي (DreamSat Pro Panel)
+                  بانل زيرو سات الاحترافي (ZERO-SAT Pro Panel)
                   <span className="text-xs px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-mono">
                     v4.0 Pro • {ENIGMA_PLUGINS.length} إضافة
                   </span>
@@ -181,12 +181,12 @@ export default function DreamSatPanelViewer() {
             </a>
 
             <a
-              href="/assets/aistudio/DreamSatPanel.py"
-              download="DreamSatPanel.py"
+              href="/assets/aistudio/ZeroSatPanel.py"
+              download="ZeroSatPanel.py"
               className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm border border-slate-700 flex items-center gap-2 transition-all cursor-pointer"
             >
               <FileCode className="w-4 h-4 text-cyan-400" />
-              <span>DreamSatPanel.py</span>
+              <span>ZeroSatPanel.py</span>
             </a>
           </div>
         </div>
@@ -198,9 +198,9 @@ export default function DreamSatPanelViewer() {
             <span className="font-bold text-amber-400">أمر التثبيت المباشر عبر Telnet / PuTTY لجميع أجهزة Enigma2 Python 3:</span>
           </div>
           <div className="flex items-center gap-2 bg-slate-900 border border-slate-750 px-3 py-1.5 rounded-lg font-mono text-[11px] text-emerald-400 max-w-full overflow-x-auto" dir="ltr">
-            <span>wget -q --no-check-certificate https://raw.githubusercontent.com/emilnabil/download-plugins/refs/heads/main/DreamSatPanel/installer.sh -O - | /bin/sh</span>
+            <span>wget -q --no-check-certificate https://raw.githubusercontent.com/emilnabil/download-plugins/refs/heads/main/ZeroSatPanel/installer.sh -O - | /bin/sh</span>
             <button
-              onClick={() => copyToClipboard('wget -q --no-check-certificate https://raw.githubusercontent.com/emilnabil/download-plugins/refs/heads/main/DreamSatPanel/installer.sh -O - | /bin/sh', 'fast-telnet-cmd')}
+              onClick={() => copyToClipboard('wget -q --no-check-certificate https://raw.githubusercontent.com/emilnabil/download-plugins/refs/heads/main/ZeroSatPanel/installer.sh -O - | /bin/sh', 'fast-telnet-cmd')}
               className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all cursor-pointer shrink-0"
               title="نسخ الأمر المباشر"
             >
@@ -209,7 +209,7 @@ export default function DreamSatPanelViewer() {
           </div>
         </div>
 
-        {/* Real-time Receiver System Dashboard (Like DreamSat Panel) */}
+        {/* Real-time Receiver System Dashboard (Like ZERO-SAT Panel) */}
         <div className="mt-6 pt-5 border-t border-slate-800/80 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 text-xs">
           <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3">
             <div className="text-slate-400 flex items-center gap-1.5 mb-1">
@@ -264,7 +264,7 @@ export default function DreamSatPanelViewer() {
         </div>
       </div>
 
-      {/* Tabs Switcher: DreamSat Explorer vs Source Code vs Installation Guide */}
+      {/* Tabs Switcher: ZERO-SAT Explorer vs Source Code vs Installation Guide */}
       <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
         <button
           onClick={() => setActiveTab('panel')}
@@ -275,7 +275,7 @@ export default function DreamSatPanelViewer() {
           }`}
         >
           <Layers className="w-4 h-4" />
-          <span>تصفح وتجربة البانل (DreamSat GUI)</span>
+          <span>تصفح وتجربة البانل (ZERO-SAT GUI)</span>
         </button>
 
         <button
@@ -428,7 +428,7 @@ export default function DreamSatPanelViewer() {
                     </div>
 
                     <p className="text-xs text-slate-300 leading-relaxed">
-                      {plugin.description || `تثبيت إضافة ${plugin.name} مباشرة على جهاز الاستقبال عبر مشغل DreamSat Panel التفاعلي.`}
+                      {plugin.description || `تثبيت إضافة ${plugin.name} مباشرة على جهاز الاستقبال عبر مشغل ZERO-SAT Panel التفاعلي.`}
                     </p>
                   </div>
 
@@ -473,7 +473,7 @@ export default function DreamSatPanelViewer() {
             <div>
               <h3 className="text-lg font-bold text-white flex items-center gap-2">
                 <FileCode className="w-5 h-5 text-cyan-400" />
-                <span>كود البلوغين الاحترافي لـ DreamSat Panel (Python 2 & 3)</span>
+                <span>كود البلوغين الاحترافي لـ ZERO-SAT Panel (Python 2 & 3)</span>
               </h3>
               <p className="text-xs text-slate-400 mt-1">
                 الملف محدث ومختبر في <code className="text-cyan-300 font-mono">/public/assets/aistudio/plugin_6a15eb1f.py</code> وجاهز للنقل المباشر لجهازك.
@@ -495,7 +495,7 @@ export default function DreamSatPanelViewer() {
           <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 font-mono text-xs text-slate-300 overflow-x-auto max-h-[500px] leading-relaxed" dir="ltr">
             <pre className="text-emerald-400">
 {`# -*- coding: utf-8 -*-
-# DreamSat Pro Panel - Enigma2 Professional Multi-Category Addon Manager
+# ZERO-SAT Pro Panel - Enigma2 Professional Multi-Category Addon Manager
 # Version: 4.0 Pro Edition
 # Compatible with: Python 2.7, Python 3.9, 3.10, 3.11, 3.12 (All E2 Images)
 # OpenATV, OpenPLi, Egami, BlackHole, OpenBH, PurE2, VTi, TeamBlue
@@ -515,7 +515,7 @@ export default function DreamSatPanelViewer() {
           <div className="space-y-1">
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
               <Wrench className="w-5 h-5 text-amber-400" />
-              <span>كيفية تثبيت ملف البلوغين المعدل على جهاز الإنيغما 2 (DreamSat Panel)</span>
+              <span>كيفية تثبيت ملف البلوغين المعدل على جهاز الإنيغما 2 (ZERO-SAT Panel)</span>
             </h3>
             <p className="text-xs text-slate-400">
               خطوات بسيطة لنقل ملف <code className="text-cyan-300 font-mono">plugin.py</code> المعدل إلى الرسيفر وتشغيله فوراً.
@@ -538,7 +538,7 @@ export default function DreamSatPanelViewer() {
                 باستخدام برنامج DCC أو FileZilla، ادخل للمسار التالي والصق الملف:
                 <br />
                 <code className="text-amber-300 font-mono text-[10px] block mt-1 bg-slate-900 p-1 rounded">
-                  /usr/lib/enigma2/python/Plugins/Extensions/DreamSatPanel/
+                  /usr/lib/enigma2/python/Plugins/Extensions/ZeroSatPanel/
                 </code>
               </p>
             </div>
@@ -568,9 +568,9 @@ export default function DreamSatPanelViewer() {
               </p>
               <ul className="list-disc list-inside space-y-1 text-slate-400 font-mono text-[11px] bg-slate-950/80 p-3 rounded-xl border border-slate-800">
                 <li><strong className="text-white">طريقة التشغيل الصحيحة:</strong> لا تقم بتشغيل الملف كـ python3 plugin.py من Telnet!</li>
-                <li><strong className="text-white">المسار المطلوب:</strong> ضع الملف في: <span className="text-cyan-400">/usr/lib/enigma2/python/Plugins/Extensions/DreamSatPanel/plugin.py</span></li>
+                <li><strong className="text-white">المسار المطلوب:</strong> ضع الملف في: <span className="text-cyan-400">/usr/lib/enigma2/python/Plugins/Extensions/ZeroSatPanel/plugin.py</span></li>
                 <li><strong className="text-white">إعادة التشغيل:</strong> نفذ أمر: <span className="text-emerald-400">killall -9 enigma2</span></li>
-                <li><strong className="text-white">التشغيل من الشاشة:</strong> ادخل بالريموت كنترول إلى: <strong>القائمة الرئيسية (Menu) &larr; الإضافات (Plugins) &larr; DreamSat Pro Panel</strong></li>
+                <li><strong className="text-white">التشغيل من الشاشة:</strong> ادخل بالريموت كنترول إلى: <strong>القائمة الرئيسية (Menu) &larr; الإضافات (Plugins) &larr; ZERO-SAT Pro Panel</strong></li>
               </ul>
             </div>
           </div>
@@ -593,7 +593,7 @@ export default function DreamSatPanelViewer() {
                 </div>
                 <div className="flex items-center gap-2 font-mono text-xs text-slate-300">
                   <Terminal className="w-4 h-4 text-cyan-400" />
-                  <span className="font-bold text-white">DreamSat Panel Live Terminal</span>
+                  <span className="font-bold text-white">ZERO-SAT Panel Live Terminal</span>
                   <span className="text-slate-500">|</span>
                   <span className="text-cyan-400 font-bold">{currentTerminalItem.name}</span>
                 </div>

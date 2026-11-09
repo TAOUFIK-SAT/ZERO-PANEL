@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
-# DreamSat Pro Panel - Enigma2 Professional Multi-Category Addon Manager
+# ZERO-SAT Pro Panel - Enigma2 Professional Multi-Category Addon Manager
 # Version: 4.0 Pro Edition
 # Compatible with: Python 2.7, Python 3.9, 3.10, 3.11, 3.12 (All E2 Images)
 # OpenATV, OpenPLi, Egami, BlackHole, OpenBH, PurE2, VTi, TeamBlue
@@ -384,9 +384,9 @@ PLUGINS_BY_CATEGORY = {
 # PRO LIVE TERMINAL CONSOLE SCREEN
 # Displays live command output in real-time with auto-scroll and status indicators
 # ==============================================================================
-class DreamSatTerminalScreen(Screen):
+class ZeroSatTerminalScreen(Screen):
     skin = """
-    <screen name="DreamSatTerminalScreen" position="center,center" size="1280,720" title="DreamSat Pro Console" flags="wfNoBorder" backgroundColor="#030712">
+    <screen name="ZeroSatTerminalScreen" position="center,center" size="1280,720" title="ZERO-SAT Pro Console" flags="wfNoBorder" backgroundColor="#030712">
         <!-- Top Terminal Header -->
         <widget name="title_label" position="30,20" size="850,45" font="Bold;28" foregroundColor="#38bdf8" transparent="1" />
         <widget name="time_label" position="900,20" size="350,45" font="Regular;24" foregroundColor="#94a3b8" halign="right" transparent="1" />
@@ -410,7 +410,7 @@ class DreamSatTerminalScreen(Screen):
         self.command = command
         Screen.__init__(self, session)
 
-        self["title_label"] = Label("DreamSat Terminal: " + str(self.item_name))
+        self["title_label"] = Label("ZERO-SAT Terminal: " + str(self.item_name))
         self["time_label"] = Label(time.strftime("%Y-%m-%d %H:%M:%S"))
         self["cmd_banner"] = Label(" [EXEC] > " + str(self.command))
         self["terminal_box"] = ScrollLabel()
@@ -437,7 +437,7 @@ class DreamSatTerminalScreen(Screen):
 
         self.log_lines = [
             "=================================================================",
-            "   DreamSat Pro Live Terminal Console - Enigma2 Installer   ",
+            "   ZERO-SAT Pro Live Terminal Console - Enigma2 Installer   ",
             "=================================================================",
             "Target Addon: " + str(self.item_name),
             "Command: " + str(self.command),
@@ -526,9 +526,9 @@ class DreamSatTerminalScreen(Screen):
 # PRO CATEGORY PLUGINS LIST SCREEN
 # Lists all extensions in the chosen section with detailed previews
 # ==============================================================================
-class DreamSatPluginsListScreen(Screen):
+class ZeroSatPluginsListScreen(Screen):
     skin = """
-    <screen name="DreamSatPluginsListScreen" position="center,center" size="1450,890" title="DreamSat Pro - Addon Explorer" flags="wfNoBorder" backgroundColor="#070c14">
+    <screen name="ZeroSatPluginsListScreen" position="center,center" size="1450,890" title="ZERO-SAT Pro - Addon Explorer" flags="wfNoBorder" backgroundColor="#070c14">
         <!-- Top Navigation Bar -->
         <widget name="cat_title" position="30,22" size="900,45" font="Bold;32" foregroundColor="#38bdf8" transparent="1" />
         <widget name="cat_count" position="950,22" size="460,45" font="Regular;24" foregroundColor="#f59e0b" halign="right" transparent="1" />
@@ -610,7 +610,7 @@ class DreamSatPluginsListScreen(Screen):
         selected = self["plugins_menu"].getCurrent()
         if selected and selected in self.items_dict:
             cmd = self.items_dict[selected]
-            self.session.open(DreamSatTerminalScreen, selected, cmd)
+            self.session.open(ZeroSatTerminalScreen, selected, cmd)
 
     def restart_enigma2(self):
         os.system("killall -9 enigma2")
@@ -620,9 +620,9 @@ class DreamSatPluginsListScreen(Screen):
 # ==============================================================================
 # PRO MAIN DASHBOARD SCREEN (Categories & Real-Time Receiver Telemetry)
 # ==============================================================================
-class DreamSatPanelMainScreen(Screen):
+class ZeroSatPanelMainScreen(Screen):
     skin = """
-    <screen name="DreamSatPanelMainScreen" position="center,center" size="1450,890" title="DreamSat Pro Panel by Emil & Team" flags="wfNoBorder" backgroundColor="#070c14">
+    <screen name="ZeroSatPanelMainScreen" position="center,center" size="1450,890" title="ZERO-SAT Pro Panel by Emil & Team" flags="wfNoBorder" backgroundColor="#070c14">
         <!-- Top Branding Header -->
         <widget name="brand_title" position="30,20" size="700,45" font="Bold;34" foregroundColor="#38bdf8" transparent="1" />
         <widget name="brand_sub" position="30,65" size="700,30" font="Regular;20" foregroundColor="#94a3b8" transparent="1" />
@@ -658,7 +658,7 @@ class DreamSatPanelMainScreen(Screen):
         self.categories_names = [c[0] for c in CATEGORIES]
         self["cat_menu"] = MenuList(self.categories_names)
 
-        self["brand_title"] = Label("DREAMSAT PRO PANEL")
+        self["brand_title"] = Label("ZERO-SAT PRO PANEL")
         self["brand_sub"] = Label("Professional Addon Manager & Terminal Launcher (" + str(PLUGIN_VERSION) + ")")
         self["clock_label"] = Label("")
 
@@ -721,11 +721,11 @@ class DreamSatPanelMainScreen(Screen):
     def open_category(self):
         selected = self["cat_menu"].getCurrent()
         if selected and selected in PLUGINS_BY_CATEGORY:
-            self.session.open(DreamSatPluginsListScreen, selected)
+            self.session.open(ZeroSatPluginsListScreen, selected)
 
     def update_panel(self):
         cmd = "wget https://github.com/emilnabil/download-plugins/raw/refs/heads/main/Ciefp-Panel/Ciefp-Panel.sh -O - | /bin/sh"
-        self.session.open(DreamSatTerminalScreen, "DreamSat Pro Self-Updater", cmd)
+        self.session.open(ZeroSatTerminalScreen, "ZERO-SAT Pro Self-Updater", cmd)
 
     def restart_enigma2(self):
         os.system("killall -9 enigma2")
@@ -792,20 +792,20 @@ class DreamSatPanelMainScreen(Screen):
 # Registers in both Plugin Menu and Extensions Quick Menu
 # ==============================================================================
 def main(session, **kwargs):
-    session.open(DreamSatPanelMainScreen)
+    session.open(ZeroSatPanelMainScreen)
 
 def Plugins(**kwargs):
     return [
         PluginDescriptor(
-            name="DreamSat Pro Panel",
-            description="DreamSat Pro Multi-Category Addons & Terminal Launcher (" + str(PLUGIN_VERSION) + ")",
+            name="ZERO-SAT Pro Panel",
+            description="ZERO-SAT Pro Multi-Category Addons & Terminal Launcher (" + str(PLUGIN_VERSION) + ")",
             where=PluginDescriptor.WHERE_PLUGINMENU,
             icon="icon.png",
             fnc=main,
         ),
         PluginDescriptor(
-            name="DreamSat Pro Panel",
-            description="DreamSat Pro Addons & Extensions",
+            name="ZERO-SAT Pro Panel",
+            description="ZERO-SAT Pro Addons & Extensions",
             where=PluginDescriptor.WHERE_EXTENSIONSMENU,
             fnc=main,
         )
@@ -815,16 +815,16 @@ def Plugins(**kwargs):
 if __name__ == "__main__":
     print("""
 ========================================================================
- [INFO] DreamSat Pro Panel is an Enigma2 GUI Plugin.
+ [INFO] ZERO-SAT Pro Panel is an Enigma2 GUI Plugin.
  It cannot be run as a standalone desktop python script (cannot start from CLI).
  
  >> How to install on your Enigma2 receiver:
  1) Copy this file as 'plugin.py' to:
-    /usr/lib/enigma2/python/Plugins/Extensions/DreamSatPanel/plugin.py
+    /usr/lib/enigma2/python/Plugins/Extensions/ZeroSatPanel/plugin.py
  2) Restart Enigma2:
     killall -9 enigma2
  3) Open the plugin from:
-    Main Menu -> Plugins -> DreamSat Pro Panel
+    Main Menu -> Plugins -> ZERO-SAT Pro Panel
 ========================================================================
 """)
 

@@ -1,6 +1,6 @@
 {
   "name": "TAOUFIK TV",
-  "description": "تطبيق TAOUFIK TV للبث المباشر للقنوات الرياضية والإخبارية ومباريات اليوم مع منشئ تحليلات تكتيكية مدعوم بـ Gemini",
+  "description": "ZERO-SAT PRO - لوحة تحكم وبانل إنيغما 2 لتثبيت وإدارة كافة إضافات أجهزة الاستقبال مع نافذة Terminal حية",
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
   ]
