@@ -21,9 +21,9 @@ mkdir -p
 echo "[*] Downloading plugin components..."
 # Try curl or wget
 if command -v curl >/dev/null 2>&1; then
-    curl -k -s -L "https://raw.githubusercontent.com/emilnabil/download-plugins/refs/heads/main/ZeroSatPanel/plugin.py" -o "/plugin.py"
+    curl -k -s -L "https://raw.githubusercontent.com/TAOUFIK-SAT/download-plugins/refs/heads/main/ZERO-PANEL/plugin.py" -o "/plugin.py"
 else
-    wget -q --no-check-certificate "https://raw.githubusercontent.com/emilnabil/download-plugins/refs/heads/main/ZeroSatPanel/plugin.py" -O "/plugin.py"
+    wget -q --no-check-certificate "https://raw.githubusercontent.com/TAOUFIK-SAT/download-plugins/refs/heads/main/ZERO-PANEL/plugin.py" -O "/plugin.py"
 fi
 
 # Set permissions
