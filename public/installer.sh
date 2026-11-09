@@ -43,6 +43,4 @@ echo "#            ZERO-SAT Pro Panel Installed Successfully!         #"
 echo "#              Restarting Enigma2 GUI in 3 seconds...           #"
 echo "#################################################################"
 echo ""
-sleep 3
-init 4 && sleep 2 && init 3 || killall -9 enigma2
 exit 0
