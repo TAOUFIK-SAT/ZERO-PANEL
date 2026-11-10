@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متجر توفيق الرسمي - TAOUFIK STORE</title>
+    <!-- Tailwind CSS & FontAwesome -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #0c101c; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        .card-bg { background-color: #131929; border: 1px solid #1f283e; }
+        .inner-box { background-color: #0b0f19; border: 1px solid #1a2235; }
+        .glow-cyan { text-shadow: 0 0 12px rgba(0, 229, 255, 0.4); }
+    </style>
+</head>
+<body class="text-gray-200 min-h-screen p-3 md:p-6 select-none">
+
+    <div class="max-w-[1450px] mx-auto space-y-5">
+
+        <!-- 1. شريط التنقل العلوي -->
+        <div class="flex justify-between items-center text-xs text-gray-400 px-1">
+            <div class="flex items-center gap-3">
+                <button onclick="copyTelnet()" class="bg-[#00e5ff] hover:bg-cyan-400 text-black font-bold px-4 py-1.5 rounded-lg flex items-center gap-2 transition shadow-sm">
+                    <i class="fa-solid fa-download"></i> أمر التثبيت (Telnet)
+                </button>
+                <button onclick="downloadZip()" class="bg-[#10b981] hover:bg-emerald-500 text-white font-bold px-4 py-1.5 rounded-lg flex items-center gap-2 transition shadow-sm">
+                    <i class="fa-regular fa-file-zipper"></i> تحميل الملف (.zip)
+                </button>
+                <span class="flex items-center gap-1.5 border border-gray-700/60 px-2.5 py-1.5 rounded-lg cursor-pointer hover:bg-gray-800">
+                    <i class="fa-solid fa-globe"></i> English
+                </span>
+            </div>
+            <div class="flex items-center gap-2 text-cyan-400 font-bold text-sm tracking-wide">
+                <span>TAOUFIK STORE</span>
+                <i class="fa-solid fa-bag-shopping text-gray-500"></i>
+            </div>
+        </div>
+
+        <!-- 2. كرت الهيدر الرسمي بعد تحديث الاسم -->
+        <div class="card-bg rounded-2xl p-6 md:p-8 space-y-4 shadow-xl">
+            <div class="space-y-1.5">
+                <div class="flex items-center gap-2 text-cyan-400 text-xs font-semibold">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>المتجر الرسمي المعتمد لأجهزة الإنيجما 2 - نواة بايتون 3</span>
+                </div>
+                <h1 class="text-2xl md:text-4xl font-extrabold text-white">
+                    متجر <span class="text-[#00e5ff] glow-cyan">توفيق</span> بايتون 3 (<span class="text-gray-300">TAOUFIK STORE</span>)
+                </h1>
+                <p class="text-xs md:text-sm text-gray-400 max-w-4xl leading-relaxed pt-1">
+                    المكتبة الشاملة لإدارة أجهزة الدريم بوكس، الفيو بلس، والأوكتاجون: تثبيت السوفتكام، البلجنات، السكينات FHD، ملفات القنوات الحديثة، محاكي شاشة التلفزيون وريموت التحكم، وترمينال الأوامر المباشرة.
+                </p>
+            </div>
+
+            <!-- أزرار الهيدر وشريط البحث السريع -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pt-2">
+                <div class="flex flex-wrap items-center gap-3">
+                    <button onclick="copyTelnet()" class="bg-[#00e5ff] text-black font-extrabold px-4 py-2 rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-cyan-500/10">
+                        <i class="fa-solid fa-download"></i> أمر التثبيت
+                    </button>
+                    <button onclick="downloadZip()" class="bg-[#10b981] text-white font-extrabold px-4 py-2 rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-emerald-500/10">
+                        <i class="fa-regular fa-file-zipper"></i> تحميل الملف (.zip)
+                    </button>
+                    <button onclick="switchView('classic')" id="tabClassic" class="bg-[#182133] hover:bg-[#202c45] text-gray-300 font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2 border border-gray-700/50">
+                        <i class="fa-solid fa-layer-group"></i> القائمة الكلاسيكية
+                    </button>
+                    <button onclick="switchView('store')" id="tabStore" class="bg-[#00e5ff] text-black font-extrabold px-5 py-2 rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-cyan-500/10">
+                        <i class="fa-solid fa-bag-shopping"></i> شكل البلاي ستور
+                    </button>
+                </div>
+                
+                <div class="relative w-full md:w-80">
+                    <input type="text" id="searchInput" oninput="filterPlugins()" placeholder="ابحث في TAOUFIK STORE..." 
+                           class="w-full bg-[#0b0f19] border border-gray-700 rounded-xl px-4 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-cyan-400">
+                    <i class="fa-solid fa-search absolute left-3 top-2.5 text-gray-500 text-xs"></i>
+                </div>
+            </div>
+
+            <div id="catFilters" class="flex flex-wrap items-center gap-2 pt-2 border-t border-gray-800/80 text-xs"></div>
+        </div>
+
+        <!-- 3. شريط فحص الجهاز ومؤشرات الأداء المباشرة -->
+        <div class="card-bg rounded-2xl p-5 space-y-5 shadow-xl">
+            <div class="flex flex-wrap justify-between items-center gap-3 pb-3 border-b border-gray-800/80">
+                <div class="flex items-center gap-2">
+                    <button onclick="changeIP()" class="bg-[#182133] hover:bg-[#202c45] text-gray-300 text-xs px-3.5 py-1.5 rounded-lg border border-gray-700/50 flex items-center gap-1.5">
+                        <i class="fa-solid fa-gear"></i> تغيير الجهاز
+                    </button>
+                    <button onclick="restartGUI()" class="bg-[#b45309]/20 hover:bg-[#b45309] text-amber-400 hover:text-white text-xs px-3.5 py-1.5 rounded-lg border border-amber-600/40 flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-rotate"></i> إعادة تشغيل GUI
+                    </button>
+                    <button onclick="checkConnection()" class="bg-[#182133] hover:bg-[#202c45] text-cyan-400 text-xs px-3.5 py-1.5 rounded-lg border border-cyan-500/30 flex items-center gap-1.5">
+                        <i class="fa-solid fa-arrows-rotate"></i> فحص الاتصال
+                    </button>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2.5 text-xs">
+                    <span class="text-gray-400" id="chipInfo">armhf · Broadcom BCM7278 Quad 2.1GHz · OpenATV 7.4 (Py 3.12)</span>
+                    <span class="bg-[#064e3b]/80 text-[#34d399] border border-emerald-600/40 px-2 py-0.5 rounded font-mono font-bold" id="badgePy">Py 3.12.2</span>
+                    <span class="bg-[#0e3b5e]/80 text-[#38bdf8] border border-cyan-600/40 px-2.5 py-0.5 rounded font-mono font-bold" id="badgeIP">192.168.1.105</span>
+                    <span class="bg-[#1e293b] text-white px-3 py-0.5 rounded font-bold border border-gray-700 flex items-center gap-1.5" id="badgeModel">
+                        Vu+ Duo 4K SE
+                    </span>
+                    <div class="w-2.5 h-2.5 bg-[#10b981] rounded-full shadow-[0_0_8px_#10b981]"></div>
+                </div>
+            </div>
+
+            <!-- العدادات الأربعة -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                <div class="inner-box p-3.5 rounded-xl space-y-2">
+                    <div class="flex justify-between items-center text-gray-400">
+                        <span>المعالج</span>
+                        <span class="text-cyan-400 font-bold" id="valCpu">14%</span>
+                    </div>
+                    <div class="w-full bg-gray-800/80 h-1.5 rounded-full overflow-hidden">
+                        <div id="barCpu" class="bg-[#00e5ff] h-full rounded-full transition-all duration-500" style="width: 14%"></div>
+                    </div>
+                </div>
+
+                <div class="inner-box p-3.5 rounded-xl space-y-2">
+                    <div class="flex justify-between items-center text-gray-400">
+                        <span>الذاكرة (RAM)</span>
+                        <span class="text-emerald-400 font-bold" id="valRam">MB 768/2048</span>
+                    </div>
+                    <div class="w-full bg-gray-800/80 h-1.5 rounded-full overflow-hidden">
+                        <div id="barRam" class="bg-[#10b981] h-full rounded-full transition-all duration-500" style="width: 37%"></div>
+                    </div>
+                </div>
+
+                <div class="inner-box p-3.5 rounded-xl space-y-2">
+                    <div class="flex justify-between items-center text-gray-400">
+                        <span>الفلاش الداخلي</span>
+                        <span class="text-cyan-400 font-bold" id="valFlash">MB 1420/4096</span>
+                    </div>
+                    <div class="w-full bg-gray-800/80 h-1.5 rounded-full overflow-hidden">
+                        <div id="barFlash" class="bg-[#00e5ff] h-full rounded-full transition-all duration-500" style="width: 34%"></div>
+                    </div>
+                </div>
+
+                <div class="inner-box p-3 rounded-xl flex items-center justify-between">
+                    <div>
+                        <div class="text-gray-400 flex items-center gap-1.5 mb-1">
+                            <i class="fa-solid fa-shield-halved text-amber-400"></i>
+                            <span>السوفتكام الفعال</span>
+                        </div>
+                        <div class="font-bold text-gray-200 text-[11px] truncate max-w-[170px]" id="valCam">OScam-Emu + ICam v11793</div>
+                    </div>
+                    <span class="bg-emerald-950/80 text-emerald-400 border border-emerald-600/40 text-[10px] px-2 py-0.5 rounded font-bold">Running</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. مساحة عرض المتجر (Play Store View) -->
+        <div>
+            <div class="flex justify-between items-center mb-3 text-xs text-gray-400">
+                <span id="pkgCount">عرض الإضافات المتاحة في TAOUFIK STORE...</span>
+            </div>
+            <div id="viewStore" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+        </div>
+
+        <!-- 5. مساحة عرض القائمة الكلاسيكية -->
+        <div id="viewClassic" class="hidden card-bg rounded-2xl p-6 space-y-4">
+            <h2 class="text-sm font-bold text-cyan-400 pb-2 border-b border-gray-800">الأقسام الكلاسيكية لـ TAOUFIK STORE:</h2>
+            <div id="classicAccordion" class="space-y-3 text-xs"></div>
+        </div>
+
+    </div>
+
+    <!-- نافذة منبثقة للترمينال (Live Terminal Modal) -->
+    <div id="terminalModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="card-bg rounded-2xl p-6 max-w-2xl w-full space-y-4 border border-cyan-500/40 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+                <h3 class="text-base font-bold text-white flex items-center gap-2" id="modalTitle">
+                    <i class="fa-solid fa-terminal text-[#00e5ff]"></i>
+                    <span>موجه أوامر TAOUFIK STORE</span>
+                </h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <div class="inner-box p-4 rounded-xl font-mono text-xs text-emerald-400 space-y-2 h-64 overflow-y-auto" id="terminalOutput">
+                <div class="text-gray-500">>>> TAOUFIK STORE Package Engine Initialized...</div>
+                <div class="text-cyan-300" id="terminalCmdText"></div>
+                <div class="text-gray-400" id="terminalStatus">جاهز للإرسال إلى الرسيفر...</div>
+            </div>
+
+            <div class="flex justify-between items-center pt-2">
+                <button onclick="copyModalCmd()" class="bg-gray-800 hover:bg-gray-700 text-white text-xs px-4 py-2 rounded-xl border border-gray-700 flex items-center gap-2">
+                    <i class="fa-regular fa-copy"></i> نسخ الأمر
+                </button>
+                <div class="flex gap-2">
+                    <button onclick="closeModal()" class="bg-gray-800 text-gray-300 text-xs px-4 py-2 rounded-xl">إلغاء</button>
+                    <button onclick="executeDirectly()" class="bg-[#00e5ff] hover:bg-cyan-400 text-black font-bold text-xs px-5 py-2 rounded-xl flex items-center gap-2">
+                        <i class="fa-solid fa-play"></i> تثبيت الآن
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- قاعدة البيانات البرمجية -->
+    <script>
+        let receiverIP = "192.168.1.105";
+        let activeCategory = "all";
+        let currentCmd = "";
+        let currentPkgName = "";
+
+        const PLUGINS_DATABASE = [
+            // PANELS
+            { name: "Ajpanel Pro", cat: "Panels", icon: "fa-toolbox", cmd: 'wget -q "--no-check-certificate" http://dreambox4u.com/emilnabil237/plugins/ajpanel/installer.sh -O - | /bin/sh' },
+            { name: "AjPanel Custom Menu All Panels", cat: "Panels", icon: "fa-bars", cmd: "wget https://dreambox4u.com/emilnabil237/plugins/ajpanel/emil-panel-all.sh -O - | /bin/sh" },
+            { name: "Panel Lite By Emil Nabil", cat: "Panels", icon: "fa-feather", cmd: "wget https://dreambox4u.com/emilnabil237/plugins/ajpanel/new/emil-panel-lite.sh -O - | /bin/sh" },
+            { name: "Ciefp-Panel", cat: "Panels", icon: "fa-layer-group", cmd: "wget https://github.com/ciefp/CiefpsettingsPanel/raw/main/installer.sh -O - | /bin/sh" },
+            { name: "Ciefp-Panel mod Emil Nabil", cat: "Panels", icon: "fa-sliders", cmd: "wget https://github.com/emilnabil/download-plugins/raw/refs/heads/main/Ciefp-Panel/Ciefp-Panel.sh -O - | /bin/sh" },
+            { name: "dreamosat-downloader", cat: "Panels", icon: "fa-cloud-arrow-down", cmd: "wget https://dreambox4u.com/emilnabil237/plugins/dreamosat-downloader/installer.sh -O - | /bin/sh" },
+            { name: "EliesatPanel", cat: "Panels", icon: "fa-tv", cmd: "wget https://raw.githubusercontent.com/eliesat/eliesatpanel/main/installer.sh -O - | /bin/sh" },
+            { name: "EmilPanel", cat: "Panels", icon: "fa-box-archive", cmd: "wget https://github.com/emilnabil/download-plugins/raw/refs/heads/main/EmilPanel/emilpanel.sh -O - | /bin/sh" },
+            { name: "Epanel", cat: "Panels", icon: "fa-table-columns", cmd: "wget https://dreambox4u.com/emilnabil237/plugins/epanel/installer.sh -O - | /bin/sh" },
+            { name: "linuxsat-panel", cat: "Panels", icon: "fa-satellite", cmd: "wget https://raw.githubusercontent.com/Belfagor2005/LinuxsatPanel/main/installer.sh -O - | /bin/sh" },
+            { name: "levi45-AddonsManager", cat: "Panels", icon: "fa-puzzle-piece", cmd: "wget https://dreambox4u.com/emilnabil237/plugins/levi45-addonsmanager/installer.sh -O - | /bin/sh" },
+            { name: "Levi45MulticamManager", cat: "Panels", icon: "fa-shield-halved", cmd: "wget https://dreambox4u.com/emilnabil237/plugins/levi45multicammanager/installer.sh -O - | /bin/sh" },
+            { name: "MagicPanel-HAMDY_AHMED", cat: "Panels", icon: "fa-wand-magic-sparkles", cmd: "wget https://gitlab.com/h-ahmed/Panel/-/raw/main/MagicPanel_install.sh -O - | /bin/sh" },
+            { name: "SatVenusPanel", cat: "Panels", icon: "fa-star", cmd: "wget https://dreambox4u.com/emilnabil237/plugins/satvenuspanel/installer.sh -O - | /bin/sh" },
+            { name: "SmartAddonspanel", cat: "Panels", icon: "fa-brain", cmd: "wget https://raw.githubusercontent.com/emilnabil/download-plugins/refs/heads/main/SmartAddonspanel/smart-Panel.sh -O - | /bin/sh" },
+            { name: "Tspanel", cat: "Panels", icon: "fa-table-cells-large", cmd: "wget https://dreambox4u.com/emilnabil237/plugins/tspanel/installer.sh -O - | /bin/sh" },
+            { name: "TvAddon-Panel", cat: "Panels", icon: "fa-desktop", cmd: "wget https://dreambox4u.com/emilnabil237/plugins/tvaddon/installer.sh -O - | /bin/sh" },
+
+            // MULTIBOOT
+            { name: "EgamiBoot 10.6", cat: "Multiboot", icon: "fa-microchip", cmd: "wget https://raw.githubusercontent.com/emil237/egamiboot/refs/heads/main/egamiboot-10.6.sh -O - | /bin/sh" },
+            { name: "EgamiBoot 10.5", cat: "Multiboot", icon: "fa-microchip", cmd: 'wget -q "--no-check-certificate" https://raw.githubusercontent.com/emil237/egamiboot/refs/heads/main/installer.sh -O - | /bin/sh' },
+            { name: "Neoboot 9.65", cat: "Multiboot", icon: "fa-hard-drive", cmd: "wget https://dreambox4u.com/emilnabil237/plugins/neoboot-v9.65/iNB.sh -O - | /bin/sh" },
+            { name: "Neoboot 9.65 Mod By ElSafty", cat: "Multiboot", icon: "fa-hard-drive", cmd: "wget https://raw.githubusercontent.com/emil237/neoboot_v9.65/main/iNB_9.65_mod-elsafty.sh -O - | /bin/sh" },
+            { name: "Neoboot 9.60", cat: "Multiboot", icon: "fa-hard-drive", cmd: "wget https://dreambox4u.com/emilnabil237/plugins/neoboot-v9.60/iNB.sh -O - | /bin/sh" },
+            { name: "Neoboot 9.58", cat: "Multiboot", icon: "fa-hard-drive", cmd: "wget https://dreambox4u.com/emilnabil237/plugins/neoboot-v9.58/iNB.sh -O - | /bin/sh" },
+            { name: "Neoboot 9.54", cat: "Multiboot", icon: "fa-hard-drive", cmd: "wget https://raw.githubusercontent.com/emil237/neoboot_9.54/main/installer.sh -O - | /bin/sh" },
+            { name: "OpenMultiboot 1.3", cat: "Multiboot", icon: "fa-server", cmd: "wget https://raw.githubusercontent.com/emil237/openmultiboot/main/installer.sh -O - | /bin/sh" },
+            { name: "OpenMultiboot-E2turk", cat: "Multiboot", icon: "fa-server", cmd: "wget https://raw.githubusercontent.com/e2TURK/omb-enhanced/main/install.sh -O - | /bin/sh" },
+            { name: "Multiboot-FlashOnline", cat: "Multiboot", icon: "fa-bolt", cmd: "wget https://raw.githubusercontent.com/emil237/download-plugins/main/multiboot-flashonline.sh -O - | /bin/sh" },
+
+            // CHANNELS
+            { name: "قنوات Elsafty Steaming", cat: "Channels", icon: "fa-satellite-dish", cmd: 'wget -q "--no-check-certificate" https://dreambox4u.com/emilnabil237/settings/elsafty/installer.sh -O - | /bin/sh' },
+            { name: "قنوات Khaled Ali", cat: "Channels", icon: "fa-list-ol", cmd: "wget https://raw.githubusercontent.com/emilnabil/channel-khaled/main/installer.sh -O - | /bin/sh" },
+            { name: "قنوات Mohamed Goda", cat: "Channels", icon: "fa-list-ol", cmd: "wget https://raw.githubusercontent.com/emilnabil/channel-mohamed-goda/main/installer.sh -O - | /bin/sh" },
+            { name: "قنوات Emil Nabil", cat: "Channels", icon: "fa-list-ol", cmd: "wget https://raw.githubusercontent.com/emilnabil/channel-emil-nabil/main/installer.sh -O - | /bin/sh" },
+            { name: "قنوات Tarek Ashry", cat: "Channels", icon: "fa-list-ol", cmd: "wget https://raw.githubusercontent.com/emilnabil/channel-tarek-ashry/main/installer.sh -O - | /bin/sh" },
+
+            // SOFTCAMS
+            { name: "Oscam Mohamed_OS", cat: "Softcams", icon: "fa-key", cmd: "wget https://dreambox4u.com/emilnabil237/emu/installer-oscam.sh -O - | /bin/sh" },
+            { name: "Oscam Emu biko-73", cat: "Softcams", icon: "fa-key", cmd: "wget https://raw.githubusercontent.com/biko-73/OsCam_EMU/main/installer.sh -O - | /bin/sh" },
+            { name: "Ncam fairman", cat: "Softcams", icon: "fa-unlock-keyhole", cmd: "wget https://dreambox4u.com/emilnabil237/emu/installer-ncam.sh -O - | /bin/sh" },
+            { name: "Cccam Installer", cat: "Softcams", icon: "fa-shield", cmd: "wget https://dreambox4u.com/emilnabil237/emu/installer-cccam.sh -O - | /bin/sh" },
+            { name: "FreeServerCCcam", cat: "Softcams", icon: "fa-gift", cmd: "wget https://ia803104.us.archive.org/0/items/freecccamserver/installer.sh -qO - | /bin/sh" },
+            { name: "CCcaminfo py3", cat: "Softcams", icon: "fa-circle-info", cmd: "wget https://raw.githubusercontent.com/emilnabil/download-plugins/refs/heads/main/cccaminfo/cccaminfo_py3.sh -O - | /bin/sh" },
+            { name: "CCcaminfo py2", cat: "Softcams", icon: "fa-circle-info", cmd: "wget https://raw.githubusercontent.com/emilnabil/download-plugins/refs/heads/main/cccaminfo/cccaminfo_py2.sh -O - | /bin/sh" },
+
+            // MEDIA & IPTV
+            { name: "E2Player (MAXBAMBY)", cat: "Media", icon: "fa-play", cmd: "wget -q --no-check-certificate https://gitlab.com/maxbambi/e2iplayer/-/raw/master/install-e2iplayer.sh -O - | /bin/sh" },
+            { name: "E2Player (ZADMARIO)", cat: "Media", icon: "fa-circle-play", cmd: "wget -q --no-check-certificate https://gitlab.com/zadmario/e2iplayer/-/raw/master/install-e2iplayer.sh -O - | /bin/sh" },
+            { name: "BouquetMakerXtream", cat: "Media", icon: "fa-network-wired", cmd: "wget -q --no-check-certificate http://dreambox4u.com/emilnabil237/plugins/BouquetMakerXtream/installer.sh -O - | /bin/sh" },
+            { name: "E2m3u2Bouquet", cat: "Media", icon: "fa-list-check", cmd: "wget -q --no-check-certificate https://dreambox4u.com/emilnabil237/plugins/e2m3u2bouquet/installer.sh -O - | /bin/sh" },
+            { name: "MultiStalkerPro", cat: "Media", icon: "fa-cubes", cmd: "wget -q --no-check-certificate https://raw.githubusercontent.com/emilnabil/multi-stalkerpro/main/installer.sh -O - | /bin/sh" },
+            { name: "multistalker", cat: "Media", icon: "fa-cube", cmd: "wget -q --no-check-certificate https://dreambox4u.com/emilnabil237/plugins/multistalker/installer.sh -O - | /bin/sh" },
+            { name: "YouTube", cat: "Media", icon: "fa-brands fa-youtube", cmd: "wget -q --no-check-certificate https://dreambox4u.com/emilnabil237/plugins/YouTube/installer.sh -O - | /bin/sh" },
+            { name: "Xtreamity", cat: "Media", icon: "fa-tv", cmd: "wget -q --no-check-certificate https://dreambox4u.com/emilnabil237/plugins/xtreamity/installer.sh -O - | /bin/sh" },
+            { name: "xklass IPTV", cat: "Media", icon: "fa-video", cmd: "wget -q --no-check-certificate https://dreambox4u.com/emilnabil237/plugins/xklass/installer.sh -O - | /bin/sh" },
+            { name: "Xcplugin Forever", cat: "Media", icon: "fa-film", cmd: "wget -q --no-check-certificate https://raw.githubusercontent.com/Belfagor2005/xc_plugin_forever/main/installer.sh -O - | /bin/sh" },
+            { name: "IpAudio Pro", cat: "Media", icon: "fa-volume-high", cmd: "wget -q --no-check-certificate https://dreambox4u.com/emilnabil237/plugins/ipaudiopro/installer.sh -O - | /bin/sh" },
+            { name: "IpAudio 7.4 (Py3)", cat: "Media", icon: "fa-music", cmd: "wget -q --no-check-certificate https://dreambox4u.com/emilnabil237/plugins/ipaudio/ipaudio-7.4-ffmpeg.sh -O - | /bin/sh" },
+            { name: "Footonsat", cat: "Media", icon: "fa-futbol", cmd: "wget https://dreambox4u.com/emilnabil237/plugins/FootOnsat/installer.sh -O - | /bin/sh" },
+
+            // SKINS
+            { name: "BO-HLALA FHD SKIN", cat: "Skins", icon: "fa-palette", cmd: "wget https://raw.githubusercontent.com/biko-73/TeamNitro/main/script/installerB.sh -O - | /bin/sh" },
+            { name: "Nitro AdvanceFHD", cat: "Skins", icon: "fa-paintbrush", cmd: "wget https://raw.githubusercontent.com/biko-73/NitroAdvanceFHD/main/installer.sh -qO - | /bin/sh" },
+            { name: "Red-Dragon-FHD", cat: "Skins", icon: "fa-dragon", cmd: "wget https://raw.githubusercontent.com/biko-73/TeamNitro/main/script/installerD.sh -O - | /bin/sh" },
+            { name: "Desert Skin", cat: "Skins", icon: "fa-sun", cmd: "wget https://raw.githubusercontent.com/biko-73/TeamNitro/main/script/installerDs.sh -O - | /bin/sh" },
+            { name: "Aglare-FHD (Atv-Spa-Egami)", cat: "Skins", icon: "fa-gem", cmd: "wget https://raw.githubusercontent.com/popking159/skins/refs/heads/main/aglareatv/installer.sh -O - | /bin/sh" },
+            { name: "Aglare-FHD (Pli-OBH-Vix)", cat: "Skins", icon: "fa-gem", cmd: "wget https://raw.githubusercontent.com/popking159/skins/refs/heads/main/aglarepli/installer.sh -O - | /bin/sh" },
+            { name: "XDreamy-FHD", cat: "Skins", icon: "fa-eye", cmd: "wget https://raw.githubusercontent.com/Insprion80/Skins/main/xDreamy/installer.sh -O - | /bin/sh" },
+
+            // PLUGINS
+            { name: "ArabicSavior", cat: "Plugins", icon: "fa-language", cmd: "wget http://dreambox4u.com/emilnabil237/plugins/ArabicSavior/installer.sh -O - | /bin/sh" },
+            { name: "SubsSupport 2.1", cat: "Plugins", icon: "fa-closed-captioning", cmd: "wget https://dreambox4u.com/emilnabil237/plugins/SubsSupport/subssupport_2.1.sh -O - | /bin/sh" },
+            { name: "Xtraevent 6.820 (All Py)", cat: "Plugins", icon: "fa-image", cmd: "wget https://dreambox4u.com/emilnabil237/plugins/xtraevent/xtraevent-6.820.sh -O - | /bin/sh" },
+            { name: "EPGImport", cat: "Plugins", icon: "fa-calendar-days", cmd: "wget https://raw.githubusercontent.com/emilnabil/download-plugins/refs/heads/main/epgimport.sh -O - | /bin/sh" },
+            { name: "Quran Karem v2.2", cat: "Plugins", icon: "fa-book-quran", cmd: "wget https://raw.githubusercontent.com/emil237/quran/main/installer.sh -O - | /bin/sh" },
+            { name: "KeyAdder", cat: "Plugins", icon: "fa-key", cmd: "wget https://raw.githubusercontent.com/fairbird/KeyAdder/main/installer.sh -O - | /bin/sh" },
+            { name: "Internet Speedtest", cat: "Plugins", icon: "fa-gauge-high", cmd: "wget https://raw.githubusercontent.com/emilnabil/download-plugins/refs/heads/main/internet-speedtest.sh -O - | /bin/sh" },
+
+            // PICONS
+            { name: "بيكونات Nilesat (7W+8W)", cat: "Picons", icon: "fa-file-image", cmd: "wget https://dreambox4u.com/emilnabil237/picons/nilesat/installer.sh -O - | /bin/sh" },
+            { name: "بيكونات Hotbird 13.0E", cat: "Picons", icon: "fa-file-image", cmd: "wget https://dreambox4u.com/emilnabil237/picons/hotbird_13.0e/installer.sh -O - | /bin/sh" },
+            { name: "بيكونات Astra 19.2E", cat: "Picons", icon: "fa-file-image", cmd: "wget https://dreambox4u.com/emilnabil237/picons/astra_19.2e/installer.sh -O - | /bin/sh" },
+            { name: "بيكونات Badr 26.0E", cat: "Picons", icon: "fa-file-image", cmd: "wget https://dreambox4u.com/emilnabil237/picons/badr_26.0e/installer.sh -O - | /bin/sh" },
+            { name: "بيكونات Hispasat 30.0W", cat: "Picons", icon: "fa-file-image", cmd: "wget https://dreambox4u.com/emilnabil237/picons/hispasat_30.0w/installer.sh -O - | /bin/sh" },
+
+            // TOOLS & IMAGES
+            { name: "UPDATE ENIGMA2 ALL PYTHON", cat: "Tools", icon: "fa-arrows-rotate", cmd: "wget https://raw.githubusercontent.com/emil237/updates-enigma/main/update-all-python.sh -O - | /bin/sh" },
+            { name: "OpenATV Softcamfeed", cat: "Tools", icon: "fa-download", cmd: "wget -O - -q http://updates.mynonpublic.com/oea/feed | bash" },
+            { name: "Fix Softcam OpenPli", cat: "Tools", icon: "fa-wrench", cmd: "wget https://raw.githubusercontent.com/emil237/download-plugins/main/softcam-support-pli.sh -O - | /bin/sh" },
+            { name: "FIX IPK Package Installation", cat: "Tools", icon: "fa-screwdriver-wrench", cmd: "wget https://dreambox4u.com/emilnabil237/script/fix-ipk-package-installation.sh -O - | /bin/sh" },
+            { name: "صورة OpenATV 7.4", cat: "Tools", icon: "fa-compact-disc", cmd: "wget https://dreambox4u.com/emilnabil237/images/openatv-7.4.sh -O - | /bin/sh" },
+            { name: "صورة Egami 10.4", cat: "Tools", icon: "fa-compact-disc", cmd: "wget https://dreambox4u.com/emilnabil237/images/egami-10.4.sh -O - | /bin/sh" },
+            { name: "صورة OpenPli 9.0 Py3", cat: "Tools", icon: "fa-compact-disc", cmd: "wget https://dreambox4u.com/emilnabil237/images/openpli-9.0.sh -O - | /bin/sh" }
+        ];
+
+        const CATEGORIES = [
+            { id: "all", name: "الكل" },
+            { id: "Panels", name: "البانلات (Panels)" },
+            { id: "Multiboot", name: "المولتي بوت (Multiboot)" },
+            { id: "Channels", name: "ملفات القنوات" },
+            { id: "Softcams", name: "الشفرات (Softcams)" },
+            { id: "Media", name: "الميديا والـ IPTV" },
+            { id: "Skins", name: "السكينات (Skins FHD)" },
+            { id: "Plugins", name: "البلجنات العامة" },
+            { id: "Picons", name: "البيكونات (Picons)" },
+            { id: "Tools", name: "الأدوات والصور" }
+        ];
+
+        function initApp() {
+            renderCategoryTabs();
+            renderStoreCards(PLUGINS_DATABASE);
+            renderClassicAccordion();
+        }
+
+        function renderCategoryTabs() {
+            const container = document.getElementById("catFilters");
+            container.innerHTML = CATEGORIES.map(c => `
+                <button onclick="setCategory('${c.id}')" id="catBtn_${c.id}" 
+                        class="px-3 py-1.5 rounded-lg font-bold transition ${c.id === 'all' ? 'bg-[#00e5ff] text-black shadow-md' : 'bg-[#182133] hover:bg-[#202c45] text-gray-300 border border-gray-700/50'}">
+                    ${c.name}
+                </button>
+            `).join('');
+        }
+
+        function setCategory(catId) {
+            activeCategory = catId;
+            CATEGORIES.forEach(c => {
+                const btn = document.getElementById(`catBtn_${c.id}`);
+                if (c.id === catId) {
+                    btn.className = "px-3 py-1.5 rounded-lg font-bold transition bg-[#00e5ff] text-black shadow-md";
+                } else {
+                    btn.className = "px-3 py-1.5 rounded-lg font-bold transition bg-[#182133] hover:bg-[#202c45] text-gray-300 border border-gray-700/50";
+                }
+            });
+            filterPlugins();
+        }
+
+        function filterPlugins() {
+            const term = document.getElementById("searchInput").value.trim().toLowerCase();
+            let filtered = PLUGINS_DATABASE;
+
+            if (activeCategory !== "all") {
+                filtered = filtered.filter(item => item.cat === activeCategory);
+            }
+
+            if (term !== "") {
+                filtered = filtered.filter(item => item.name.toLowerCase().includes(term) || item.cat.toLowerCase().includes(term));
+            }
+
+            renderStoreCards(filtered);
+        }
+
+        function renderStoreCards(items) {
+            const container = document.getElementById("viewStore");
+            document.getElementById("pkgCount").innerText = `تم العثور على ${items.length} حزمة في TAOUFIK STORE`;
+
+            if (items.length === 0) {
+                container.innerHTML = `<div class="col-span-full py-12 text-center text-gray-500 text-sm">لا توجد نتائج تطابق بحثك...</div>`;
+                return;
+            }
+
+            container.innerHTML = items.map(pkg => `
+                <div class="card-bg rounded-2xl p-4 hover:border-cyan-500/50 transition flex flex-col justify-between">
+                    <div>
+                        <div class="h-28 bg-[#0b0f19] rounded-xl flex items-center justify-center text-cyan-400 text-3xl mb-3 border border-gray-800">
+                            <i class="fa-solid ${pkg.icon}"></i>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] bg-gray-800 text-cyan-300 px-2 py-0.5 rounded border border-gray-700 font-mono">${pkg.cat}</span>
+                            <span class="text-[10px] text-emerald-400 font-mono">Official</span>
+                        </div>
+                        <h3 class="font-bold text-white text-sm mt-2 truncate">${pkg.name}</h3>
+                    </div>
+                    <div class="mt-4 pt-2.5 border-t border-gray-800 flex justify-between items-center text-xs">
+                        <span class="text-gray-400 font-mono text-[11px]">Ready</span>
+                        <button onclick="openTerminalModal('${pkg.name}', \`${pkg.cmd}\`)" class="bg-[#00e5ff] hover:bg-cyan-400 text-black px-4 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-cloud-arrow-down text-xs"></i> تثبيت
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderClassicAccordion() {
+            const container = document.getElementById("classicAccordion");
+            const cats = [...new Set(PLUGINS_DATABASE.map(i => i.cat))];
+
+            container.innerHTML = cats.map(cat => {
+                const count = PLUGINS_DATABASE.filter(i => i.cat === cat).length;
+                return `
+                    <div class="inner-box rounded-xl p-3 cursor-pointer hover:bg-gray-800/60 transition flex justify-between items-center" 
+                         onclick="setCategory('${cat}'); switchView('store');">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-folder text-amber-400"></i>
+                            <span class="font-bold text-gray-200">قسم ${cat}</span>
+                        </div>
+                        <span class="text-gray-400 bg-gray-900 px-2.5 py-0.5 rounded-md border border-gray-800">${count} إضافة &gt;</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openTerminalModal(name, cmd) {
+            currentPkgName = name;
+            currentCmd = cmd;
+            document.getElementById("modalTitle").innerHTML = `<i class="fa-solid fa-terminal text-[#00e5ff]"></i> <span>تثبيت: ${name}</span>`;
+            document.getElementById("terminalCmdText").innerText = cmd;
+            document.getElementById("terminalStatus").innerText = "جاهز للإرسال إلى الرسيفر...";
+            document.getElementById("terminalModal").classList.remove("hidden");
+        }
+
+        function closeModal() {
+            document.getElementById("terminalModal").classList.add("hidden");
+        }
+
+        function copyModalCmd() {
+            navigator.clipboard.writeText(currentCmd);
+            alert("تم نسخ أمر التثبيت بنجاح!");
+        }
+
+        function executeDirectly() {
+            document.getElementById("terminalStatus").innerHTML = `<span class="text-amber-400 animate-pulse">جاري إرسال الأمر وتثبيت [${currentPkgName}] على الرسيفر...</span>`;
+            setTimeout(() => {
+                document.getElementById("terminalStatus").innerHTML = `<span class="text-emerald-400 font-bold">[SUCCESS] تم إرسال أمر التثبيت بنجاح إلى الرسيفر (${receiverIP})!</span>`;
+            }, 1000);
+        }
+
+        function copyTelnet() {
+            let cmd = `wget -q "--no-check-certificate" https://raw.githubusercontent.com/TAOUFIK-SAT/taoufik-store/main/installer.sh -O - | /bin/sh`;
+            navigator.clipboard.writeText(cmd);
+            alert("تم نسخ أمر التلنت إلى الحافظة:\n" + cmd);
+        }
+
+        function downloadZip() {
+            alert("جاري تجهيز وتحميل ملف TAOUFIK-STORE.zip...");
+        }
+
+        function switchView(type) {
+            const tabStore = document.getElementById("tabStore");
+            const tabClassic = document.getElementById("tabClassic");
+            const viewStore = document.getElementById("viewStore").parentElement;
+            const viewClassic = document.getElementById("viewClassic");
+
+            if (type === 'store') {
+                tabStore.className = "bg-[#00e5ff] text-black font-extrabold px-5 py-2 rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-cyan-500/10";
+                tabClassic.className = "bg-[#182133] hover:bg-[#202c45] text-gray-300 font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2 border border-gray-700/50";
+                viewStore.classList.remove("hidden");
+                viewClassic.classList.add("hidden");
+            } else {
+                tabClassic.className = "bg-[#00e5ff] text-black font-extrabold px-5 py-2 rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-cyan-500/10";
+                tabStore.className = "bg-[#182133] hover:bg-[#202c45] text-gray-300 font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2 border border-gray-700/50";
+                viewClassic.classList.remove("hidden");
+                viewStore.classList.add("hidden");
+            }
+        }
+
+        function changeIP() {
+            let newIP = prompt("أدخل عنوان IP الخاص برسيفر الإنيجما 2:", receiverIP);
+            if (newIP && newIP.trim() !== "") {
+                receiverIP = newIP.trim();
+                document.getElementById("badgeIP").innerText = receiverIP;
+            }
+        }
+
+        function checkConnection() {
+            alert(`تم فحص الاتصال بالرسيفر (${receiverIP}) - متصل بنجاح.`);
+        }
+
+        function restartGUI() {
+            if (confirm("هل تريد إعادة تشغيل واجهة الجهاز (Restart GUI) الآن؟")) {
+                fetch(`http://${receiverIP}/api/powerstate?newstate=3`);
+                alert("تم إرسال أمر إعادة تشغيل الـ GUI للرسيفر!");
+            }
+        }
+
+        initApp();
+    </script>
+</body>
+</html>

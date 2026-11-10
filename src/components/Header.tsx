@@ -25,22 +25,23 @@ export default function Header() {
           {/* Logo & Branding */}
           <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
             <div className="flex items-center gap-3">
-              <div className="bg-gradient-to-tr from-cyan-500 to-blue-600 p-2.5 rounded-xl shadow-lg shadow-cyan-500/25 flex items-center justify-center ring-2 ring-cyan-400/30">
+              <div className="bg-gradient-to-tr from-cyan-400 to-blue-600 p-2.5 rounded-xl shadow-lg shadow-cyan-500/25 flex items-center justify-center ring-2 ring-cyan-400/30">
                 <Terminal className="w-6 h-6 text-slate-950 font-black animate-pulse" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-2xl font-black font-sans tracking-tight text-white flex items-center gap-1.5">
-                    <span>ZERO-SAT</span>
-                    <span className="text-cyan-400 font-extrabold px-1.5 py-0.5 rounded-md bg-cyan-500/10 border border-cyan-500/30 text-sm">PRO</span>
+                  <h1 className="text-xl sm:text-2xl font-black font-sans tracking-tight text-white flex items-center gap-1.5">
+                    <span className="text-white">متجر</span>
+                    <span className="text-[#00e5ff] font-extrabold">توفيق</span>
+                    <span className="text-xs px-2 py-0.5 rounded-md bg-cyan-500/10 border border-cyan-500/30 font-mono text-cyan-300">TAOUFIK STORE</span>
                   </h1>
-                  <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <span className="hidden md:flex bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-                    <span>GitHub & Local Mode</span>
+                    <span>Enigma2 Python 3.12 Ready</span>
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 font-mono mt-0.5">
-                  لوحة تحكم إنيغما 2 • تشغيل محلي (Local) وسحابي عبر GitHub
+                <p className="text-[11px] sm:text-xs text-slate-400 font-mono mt-0.5">
+                  المتجر الرسمي المعتمد لأجهزة الإنيجما 2 • تشغيل محلي وسحابي
                 </p>
               </div>
             </div>
@@ -48,7 +49,7 @@ export default function Header() {
             {/* Mobile quick badge */}
             <div className="sm:hidden flex items-center gap-1 text-[11px] text-cyan-400 bg-cyan-950/60 border border-cyan-800/40 px-2.5 py-1 rounded-lg">
               <Radio className="w-3.5 h-3.5 animate-pulse" />
-              <span>GitHub Ready</span>
+              <span>TAOUFIK STORE</span>
             </div>
           </div>
 
@@ -56,7 +57,7 @@ export default function Header() {
           <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
             <div className="hidden lg:flex items-center gap-1.5 text-xs text-slate-400 bg-slate-950/60 border border-slate-800 px-3 py-1.5 rounded-xl font-mono">
               <Cpu className="w-3.5 h-3.5 text-cyan-400" />
-              <span>TAOUFIK-SAT / ZERO-PANEL</span>
+              <span>TAOUFIK-SAT / Official Repo</span>
             </div>
 
             <button

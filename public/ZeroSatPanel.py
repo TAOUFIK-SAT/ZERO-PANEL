@@ -502,14 +502,42 @@ class ZeroSatTerminalScreen(Screen):
         self.log_lines.append("-----------------------------------------------------------------")
         if exit_code == 0:
             self.log_lines.append("[SUCCESS] Process finished successfully with return code: 0")
-            self.log_lines.append("[INFO] Addon is installed! Restart Enigma2 (Green) if needed.")
-            self["status_label"].setText("Done (Code: 0). Press OK or Red to exit.")
+            self.log_lines.append("[INFO] Addon is installed! Log saved to /tmp/zerosat_terminal.log")
+            self["status_label"].setText("Completed (Code: 0). Press OK or Red to exit.")
         else:
             self.log_lines.append("[WARNING] Process finished with exit code: " + str(exit_code))
+            self.log_lines.append("[INFO] Check /tmp/zerosat_terminal.log for troubleshooting.")
             self["status_label"].setText("Finished with code " + str(exit_code) + ". Press OK or Red.")
+
+        # Save complete log to /tmp for troubleshooting
+        try:
+            with open("/tmp/zerosat_terminal.log", "w") as log_file:
+                log_file.write("\n".join(self.log_lines))
+        except Exception:
+            pass
 
         self["terminal_box"].setText("\n".join(self.log_lines))
         self["terminal_box"].lastPage()
+
+        # Prompt for restart on successful installation
+        if exit_code == 0:
+            try:
+                from Screens.MessageBox import MessageBox
+                self.session.openWithCallback(
+                    self.on_restart_confirm,
+                    MessageBox,
+                    "Installation of [" + str(self.item_name) + "] completed successfully!\n\nDo you want to restart Enigma2 GUI now to apply changes?",
+                    MessageBox.TYPE_YESNO,
+                    timeout=12,
+                    default=True
+                )
+            except Exception:
+                pass
+
+    def on_restart_confirm(self, result):
+        if result:
+            os.system("killall -9 enigma2")
+            self.close()
 
     def scroll_terminal_down(self):
         self["terminal_box"].lastPage()
@@ -568,8 +596,29 @@ class ZeroSatPluginsListScreen(Screen):
     def __init__(self, session, category_name):
         self.session = session
         self.category_name = category_name
-        self.items_dict = PLUGINS_BY_CATEGORY.get(category_name, {})
-        self.items_keys = sorted(list(self.items_dict.keys()))
+        base_dict = dict(PLUGINS_BY_CATEGORY.get(category_name, {}))
+
+        # Auto-detect real local IPK / Tar.gz packages if in Local Tools section
+        if self.category_name == "Local Tools & /tmp Installer":
+            for search_path in ["/tmp", "/media/hdd", "/media/usb"]:
+                try:
+                    if os.path.isdir(search_path):
+                        for fname in sorted(os.listdir(search_path)):
+                            full_target = os.path.join(search_path, fname)
+                            if os.path.isfile(full_target):
+                                if fname.endswith(".ipk"):
+                                    base_dict["[INSTALL IPK] " + str(fname)] = "opkg install --force-overwrite '" + str(full_target) + "'"
+                                elif fname.endswith(".tar.gz"):
+                                    base_dict["[EXTRACT TAR] " + str(fname)] = "tar -xzf '" + str(full_target) + "' -C / && opkg update"
+                except Exception:
+                    pass
+
+        self.items_dict = base_dict
+        import re
+        self.items_keys = sorted(
+            list(self.items_dict.keys()),
+            key=lambda s: [int(t) if t.isdigit() else t.lower() for t in re.split(r'(\d+)', str(s))]
+        )
 
         Screen.__init__(self, session)
 
@@ -614,19 +663,28 @@ class ZeroSatPluginsListScreen(Screen):
             self.session.openWithCallback(self.apply_search_filter, InputBox, title="Search Addons in " + str(self.category_name) + ":", text="")
         except Exception:
             # Fallback for images without InputBox
-            self.items_keys = sorted(list(self.items_dict.keys()))
+            import re
+            self.items_keys = sorted(
+                list(self.items_dict.keys()),
+                key=lambda s: [int(t) if t.isdigit() else t.lower() for t in re.split(r'(\d+)', str(s))]
+            )
             self["plugins_menu"].setList(self.items_keys)
             self["cat_count"].setText(str(len(self.items_keys)) + " Addons (All)")
             self.update_preview()
 
     def apply_search_filter(self, query=None):
+        import re
         if not query or not str(query).strip():
-            self.items_keys = sorted(list(self.items_dict.keys()))
-            self["cat_count"].setText(str(len(self.items_keys)) + " Addons (All)")
+            raw_list = list(self.items_dict.keys())
+            self["cat_count"].setText(str(len(raw_list)) + " Addons (All)")
         else:
             q = str(query).strip().lower()
-            self.items_keys = sorted([k for k in self.items_dict.keys() if q in k.lower()])
-            self["cat_count"].setText(str(len(self.items_keys)) + " Filtered: " + str(query))
+            raw_list = [k for k in self.items_dict.keys() if q in k.lower()]
+            self["cat_count"].setText(str(len(raw_list)) + " Found: '" + str(query).strip() + "'")
+        self.items_keys = sorted(
+            raw_list,
+            key=lambda s: [int(t) if t.isdigit() else t.lower() for t in re.split(r'(\d+)', str(s))]
+        )
         self["plugins_menu"].setList(self.items_keys)
         self.update_preview()
 
@@ -680,16 +738,17 @@ class ZeroSatPanelMainScreen(Screen):
         <widget name="cat_menu" position="30,115" size="680,675" scrollbarMode="showOnDemand" itemHeight="60" font="Bold;26" backgroundColor="#0f172a" foregroundColor="#f8fafc" foregroundColorSelected="#38bdf8" />
 
         <!-- Receiver Telemetry & Hardware Info Panel -->
-        <widget name="sys_header" position="740,115" size="670,45" font="Bold;24" foregroundColor="#38bdf8" backgroundColor="#1e293b" halign="center" />
-        <widget name="receiver_model" position="740,168" size="670,45" font="Regular;22" backgroundColor="#111827" foregroundColor="#ffffff" halign="center" />
-        <widget name="image_info" position="740,221" size="670,45" font="Regular;22" backgroundColor="#1e293b" foregroundColor="#ffffff" halign="center" />
-        <widget name="cpu_info" position="740,274" size="670,45" font="Regular;22" backgroundColor="#111827" foregroundColor="#ffffff" halign="center" />
-        <widget name="memory_info" position="740,327" size="670,45" font="Regular;22" backgroundColor="#1e293b" foregroundColor="#ffffff" halign="center" />
-        <widget name="storage_info" position="740,380" size="670,45" font="Regular;22" backgroundColor="#111827" foregroundColor="#ffffff" halign="center" />
-        <widget name="internet_status" position="740,433" size="670,45" font="Regular;22" backgroundColor="#1e293b" foregroundColor="#ffffff" halign="center" />
+        <widget name="sys_header" position="740,115" size="670,42" font="Bold;24" foregroundColor="#38bdf8" backgroundColor="#1e293b" halign="center" />
+        <widget name="receiver_model" position="740,162" size="670,38" font="Regular;22" backgroundColor="#111827" foregroundColor="#ffffff" halign="center" />
+        <widget name="image_info" position="740,204" size="670,38" font="Regular;22" backgroundColor="#1e293b" foregroundColor="#ffffff" halign="center" />
+        <widget name="cpu_info" position="740,246" size="670,38" font="Regular;22" backgroundColor="#111827" foregroundColor="#ffffff" halign="center" />
+        <widget name="active_cam" position="740,288" size="670,38" font="Regular;22" backgroundColor="#1e293b" foregroundColor="#facc15" halign="center" />
+        <widget name="memory_info" position="740,330" size="670,38" font="Regular;22" backgroundColor="#111827" foregroundColor="#ffffff" halign="center" />
+        <widget name="storage_info" position="740,372" size="670,38" font="Regular;22" backgroundColor="#1e293b" foregroundColor="#ffffff" halign="center" />
+        <widget name="internet_status" position="740,414" size="670,38" font="Regular;22" backgroundColor="#111827" foregroundColor="#ffffff" halign="center" />
 
         <!-- Category Description Box -->
-        <widget name="cat_desc_box" position="740,496" size="670,294" font="Regular;22" backgroundColor="#0d1522" foregroundColor="#cbd5e1" />
+        <widget name="cat_desc_box" position="740,465" size="670,325" font="Regular;22" backgroundColor="#0d1522" foregroundColor="#cbd5e1" />
 
         <!-- Remote Color Buttons -->
         <widget name="key_red" position="40,810" size="310,56" font="Regular;24" halign="center" backgroundColor="#991b1b" foregroundColor="#ffffff" />
@@ -710,14 +769,15 @@ class ZeroSatPanelMainScreen(Screen):
         except Exception:
             pass
 
-        self["brand_title"] = Label("ZERO-SAT PRO PANEL")
-        self["brand_sub"] = Label("Professional Addon Manager & Terminal Launcher (v" + str(PLUGIN_VERSION) + ")")
+        self["brand_title"] = Label("TAOUFIK STORE")
+        self["brand_sub"] = Label("متجر توفيق بايتون 3 - Official Enigma2 Addon Manager (v" + str(PLUGIN_VERSION) + ")")
         self["clock_label"] = Label("")
 
         self["sys_header"] = Label("RECEIVER SYSTEM TELEMETRY")
         self["receiver_model"] = Label(self.get_receiver_model())
         self["image_info"] = Label(self.get_image_info())
         self["cpu_info"] = Label(self.get_cpu_info())
+        self["active_cam"] = Label(self.get_active_softcam())
         self["memory_info"] = Label(self.get_memory_info())
         self["storage_info"] = Label(self.get_storage_info())
         self["internet_status"] = Label(self.get_internet_status())
@@ -737,6 +797,8 @@ class ZeroSatPanelMainScreen(Screen):
                 "ok": self.open_category,
                 "yellow": self.update_panel,
                 "blue": self.restart_enigma2,
+                "info": self.show_about,
+                "menu": self.show_about,
             },
         )
 
@@ -910,6 +972,41 @@ class ZeroSatPanelMainScreen(Screen):
         except Exception:
             return "Network: Connected"
 
+    def get_active_softcam(self):
+        try:
+            for emu_path in ["/etc/clist.list", "/tmp/cam.info", "/etc/active_emu.list", "/tmp/egami.emu"]:
+                if os.path.exists(emu_path):
+                    with open(emu_path, "r") as f:
+                        line = f.readline().strip()
+                        if line:
+                            return "Cam: " + str(line)[:28]
+            # Scan for background emulator processes
+            for cam in ["oscam", "ncam", "CCcam", "gcam", "revcam", "suptv", "wicardd"]:
+                if os.system("pgrep -i " + cam + " > /dev/null 2>&1") == 0:
+                    return "Cam: " + str(cam).upper() + " (Active)"
+            return "Cam: Standby / No Emu"
+        except Exception:
+            return "Cam: Standard"
+
+    def show_about(self):
+        try:
+            from Screens.MessageBox import MessageBox
+            about_msg = (
+                "ZERO-SAT PRO PANEL (v" + str(PLUGIN_VERSION) + ")\n"
+                "Ultimate Addons & Terminal Manager for Enigma2\n\n"
+                "• 12 Dedicated Plugin Categories\n"
+                "• Real-Time Terminal Streaming & Auto-Scroll\n"
+                "• Local /tmp, HDD & USB Package Installer\n"
+                "• Instant Search via Yellow Remote Button\n"
+                "• Deep Hardware & Network Telemetry\n\n"
+                "Images: OpenATV, OpenPLi, Egami, PurE2, BlackHole, VTi\n"
+                "Hardware: VU+, Dreambox, Octagon, Zgemma, GigaBlue\n"
+                "Python: 3.12, 3.11, 3.10, 3.9 & 2.7 Multi-Architecture"
+            )
+            self.session.open(MessageBox, about_msg, MessageBox.TYPE_INFO)
+        except Exception:
+            pass
+
 
 # ==============================================================================
 # ENIGMA2 PLUGIN ENTRY DESCRIPTORS
@@ -937,7 +1034,7 @@ def main(session=None, **kwargs):
 
 def main_menu(menuid, **kwargs):
     if menuid == "mainmenu":
-        return [("ZERO-SAT Pro Panel", main, "zerosat_panel", 44)]
+        return [("متجر توفيق (TAOUFIK STORE)", main, "taoufik_store", 44)]
     return []
 
 def Plugins(**kwargs):
@@ -950,8 +1047,8 @@ def Plugins(**kwargs):
     try:
         descriptors.append(
             PluginDescriptor(
-                name="ZERO-SAT Pro Panel",
-                description="ZERO-SAT Pro Multi-Category Addons (" + str(PLUGIN_VERSION) + ")",
+                name="TAOUFIK STORE",
+                description="متجر توفيق بايتون 3 (TAOUFIK STORE) - المتجر الرسمي المعتمد للإنيجما 2",
                 where=PluginDescriptor.WHERE_PLUGINMENU,
                 icon="icon.png",
                 fnc=main,
@@ -964,8 +1061,8 @@ def Plugins(**kwargs):
     try:
         descriptors.append(
             PluginDescriptor(
-                name="ZERO-SAT Pro Panel",
-                description="ZERO-SAT Pro Addons & Extensions",
+                name="TAOUFIK STORE",
+                description="متجر توفيق بايتون 3 - إضافات وبانلات الرسيفر",
                 where=PluginDescriptor.WHERE_EXTENSIONSMENU,
                 fnc=main,
             )
@@ -978,8 +1075,8 @@ def Plugins(**kwargs):
         if hasattr(PluginDescriptor, "WHERE_MENU"):
             descriptors.append(
                 PluginDescriptor(
-                    name="ZERO-SAT Pro Panel",
-                    description="ZERO-SAT Pro Addons Manager",
+                    name="TAOUFIK STORE",
+                    description="متجر توفيق بايتون 3 (TAOUFIK STORE)",
                     where=PluginDescriptor.WHERE_MENU,
                     fnc=main_menu,
                 )
@@ -993,7 +1090,7 @@ def Plugins(**kwargs):
 if __name__ == "__main__":
     print("""
 ========================================================================
- [INFO] ZERO-SAT Pro Panel is an Enigma2 GUI Plugin.
+ [INFO] متجر توفيق بايتون 3 (TAOUFIK STORE) is an Enigma2 GUI Plugin.
  It cannot be run as a standalone desktop python script.
  
  >> How to install on your Enigma2 receiver (Python 3.12 / 3.11 / 2.7):
@@ -1006,9 +1103,9 @@ if __name__ == "__main__":
  3) Restart Enigma2:
     killall -9 enigma2
  4) Open plugin from:
-    - Main Menu -> Plugins -> ZERO-SAT Pro Panel
-    - Blue button (Extensions) -> ZERO-SAT Pro Panel
-    - Receiver Main Menu -> ZERO-SAT Pro Panel
+    - Main Menu -> Plugins -> TAOUFIK STORE
+    - Blue button (Extensions) -> TAOUFIK STORE
+    - Receiver Main Menu -> متجر توفيق (TAOUFIK STORE)
 ========================================================================
 """)
 

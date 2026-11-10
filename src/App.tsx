@@ -22,8 +22,8 @@ export default function App() {
       {/* Footer System Info */}
       <footer className="bg-slate-900 border-t border-slate-800 text-slate-500 py-4 select-none shrink-0" dir="rtl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs space-y-1.5">
-          <p>© {new Date().getFullYear()} ZERO-SAT PRO - لوحة تحكم وإضافات أجهزة الإنيغما 2 الشاملة (Enigma2 Python 3 & Python 2).</p>
-          <p className="text-[10px] text-slate-600 font-mono">VU+ • Dreambox • Octagon • Zgemma • GigaBlue • OpenATV • OpenPLi • Egami • BlackHole</p>
+          <p>© {new Date().getFullYear()} متجر توفيق بايتون 3 (TAOUFIK STORE) - المتجر الرسمي المعتمد لأجهزة الإنيجما 2 (Python 3 & Python 2).</p>
+          <p className="text-[10px] text-slate-600 font-mono">VU+ • Dreambox • Octagon • Zgemma • GigaBlue • Novaler • OpenATV • OpenPLi • Egami • BlackHole</p>
         </div>
       </footer>
 
