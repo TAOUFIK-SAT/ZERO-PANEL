@@ -2080,5 +2080,113 @@ export const ENIGMA_PLUGINS: EnigmaPluginItem[] = [
     "categoryName": "Picons & Logos",
     "command": "wget https://raw.githubusercontent.com/Belfagor2005/mmPicons/main/installer.sh -O - | /bin/sh",
     "isMagStalker": false
+  },
+  {
+    "id": "local-install-ipk",
+    "name": "1. Install all IPK packages in /tmp",
+    "category": "localtools",
+    "categoryName": "Local Tools & /tmp Installer",
+    "command": "opkg install --force-overwrite /tmp/*.ipk",
+    "description": "تثبيت فوري لجميع حزم IPK المرفوعة إلى مسار /tmp على الجهاز دفعة واحدة",
+    "isMagStalker": false
+  },
+  {
+    "id": "local-install-targz",
+    "name": "2. Install all Tar.gz packages in /tmp",
+    "category": "localtools",
+    "categoryName": "Local Tools & /tmp Installer",
+    "command": "tar -xzf /tmp/*.tar.gz -C / && opkg update",
+    "description": "فك وتثبيت كافة ملفات tar.gz المضغوطة يدوياً داخل مسار /tmp",
+    "isMagStalker": false
+  },
+  {
+    "id": "local-opkg-update",
+    "name": "3. Update OPKG Feeds & Repositories",
+    "category": "localtools",
+    "categoryName": "Local Tools & /tmp Installer",
+    "command": "opkg update",
+    "description": "تحديث قوائم ومستودعات الفيد الرسمية لصورة الإنيغما2 الحالية",
+    "isMagStalker": false
+  },
+  {
+    "id": "local-opkg-upgrade",
+    "name": "4. Upgrade Installed Packages (opkg upgrade)",
+    "category": "localtools",
+    "categoryName": "Local Tools & /tmp Installer",
+    "command": "opkg update && opkg upgrade",
+    "description": "ترقية حزم النظام والمكتبات المثبتة على الجهاز لآخر إصدار",
+    "isMagStalker": false
+  },
+  {
+    "id": "local-clean-tmp",
+    "name": "5. Clean Crash Logs & /tmp Junk",
+    "category": "localtools",
+    "categoryName": "Local Tools & /tmp Installer",
+    "command": "rm -rf /tmp/enigma2_crash* /tmp/*.log /tmp/*.ipk /tmp/*.tar.gz && echo 'Cleaned /tmp successfully'",
+    "description": "تنظيف مجلد /tmp وحذف سجلات الكراش لوغ والملفات المؤقتة لتسريع الجهاز",
+    "isMagStalker": false
+  },
+  {
+    "id": "local-free-ram",
+    "name": "6. Free RAM Memory (Drop Linux Caches)",
+    "category": "localtools",
+    "categoryName": "Local Tools & /tmp Installer",
+    "command": "sync && echo 3 > /proc/sys/vm/drop_caches && free",
+    "description": "تحرير كاش الذاكرة العشوائية RAM وتسريع استجابة الرسيفر بدون إعادة تشغيل",
+    "isMagStalker": false
+  },
+  {
+    "id": "local-test-network",
+    "name": "7. Test Network & DNS Connectivity",
+    "category": "localtools",
+    "categoryName": "Local Tools & /tmp Installer",
+    "command": "ping -c 3 8.8.8.8 && nslookup google.com",
+    "description": "فحص اتصال الإنترنت وحل نطاقات DNS وسرعة استجابة السيرفرات",
+    "isMagStalker": false
+  },
+  {
+    "id": "local-disk-usage",
+    "name": "8. Check Storage & Flash Space (df -h)",
+    "category": "localtools",
+    "categoryName": "Local Tools & /tmp Installer",
+    "command": "df -h",
+    "description": "عرض السعة التخزينية المتبقية على الفلاش الداخلي والقرص الصلب والفلاشة USB",
+    "isMagStalker": false
+  },
+  {
+    "id": "local-restart-softcams",
+    "name": "9. Restart Softcams & Emulators",
+    "category": "localtools",
+    "categoryName": "Local Tools & /tmp Installer",
+    "command": "/etc/init.d/softcam restart 2>/dev/null || killall -9 oscam ncam CCcam 2>/dev/null; /etc/init.d/softcam start 2>/dev/null; echo 'Softcam restart executed'",
+    "description": "إعادة تشغيل فورية لمحاكيات السيرفرات (Oscam, Ncam, CCcam) وتحديث المفاتيح",
+    "isMagStalker": false
+  },
+  {
+    "id": "local-listening-ports",
+    "name": "10. Inspect Network Listening Ports",
+    "category": "localtools",
+    "categoryName": "Local Tools & /tmp Installer",
+    "command": "netstat -tulpn 2>/dev/null || ss -tulpn 2>/dev/null || echo 'netstat not available'",
+    "description": "كشف المنافذ المفتوحة والمفتوحة لخدمات الويب والسيرفرات على الرسيفر",
+    "isMagStalker": false
+  },
+  {
+    "id": "local-restart-e2",
+    "name": "11. Fast Restart Enigma2 GUI",
+    "category": "localtools",
+    "categoryName": "Local Tools & /tmp Installer",
+    "command": "killall -9 enigma2",
+    "description": "إعادة تشغيل فورية لواجهة الإنيغما2 لحفظ التعديلات وتشغيل البلوجينات الجديدة",
+    "isMagStalker": false
+  },
+  {
+    "id": "local-reboot-box",
+    "name": "12. Complete Receiver Reboot",
+    "category": "localtools",
+    "categoryName": "Local Tools & /tmp Installer",
+    "command": "sync && reboot",
+    "description": "إعادة تشغيل كاملة للجهاز والنظام وحفظ الذاكرة إلى الفلاش",
+    "isMagStalker": false
   }
 ];

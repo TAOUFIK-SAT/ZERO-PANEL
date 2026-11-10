@@ -181,6 +181,7 @@ CATEGORIES = [
     ("Multiboot", "برامج الإقلاع المتعدد وتثبيت الصور"),
     ("Bootlogos", "شاشات إقلاع الجهاز ومناسبات رمضان والأعياد"),
     ("Images", "روابط تحميل وتثبيت صور الفلاش الخام"),
+    ("Local Tools & /tmp Installer", "تثبيت حزم IPK و Tar.gz المحلية وأدوات صيانة النظام"),
 ]
 
 PLUGINS_BY_CATEGORY = {
@@ -464,6 +465,20 @@ PLUGINS_BY_CATEGORY = {
         "Picons bulgariasat_1.9e": "wget https://dreambox4u.com/emilnabil237/picons/bulgariasat_1.9e/installer.sh -O - | /bin/sh",
         "chocholousek-picons": "wget https://raw.githubusercontent.com/emilnabil/download-plugins/refs/heads/main/chocholousek-picons.sh -O - | /bin/sh",
         "MmPicons": "wget https://raw.githubusercontent.com/Belfagor2005/mmPicons/main/installer.sh -O - | /bin/sh",
+    },
+    "Local Tools & /tmp Installer": {
+        "1. Install all IPK packages in /tmp": "opkg install --force-overwrite /tmp/*.ipk",
+        "2. Install all Tar.gz packages in /tmp": "tar -xzf /tmp/*.tar.gz -C / && opkg update",
+        "3. Update OPKG Feeds & Repositories": "opkg update",
+        "4. Upgrade Installed Packages (opkg upgrade)": "opkg update && opkg upgrade",
+        "5. Clean Crash Logs & /tmp Junk": "rm -rf /tmp/enigma2_crash* /tmp/*.log /tmp/*.ipk /tmp/*.tar.gz && echo 'Cleaned /tmp successfully'",
+        "6. Free RAM Memory (Drop Linux Caches)": "sync && echo 3 > /proc/sys/vm/drop_caches && free",
+        "7. Test Network & DNS Connectivity": "ping -c 3 8.8.8.8 && nslookup google.com",
+        "8. Check Storage & Flash Space (df -h)": "df -h",
+        "9. Restart Softcams & Emulators": "/etc/init.d/softcam restart 2>/dev/null || killall -9 oscam ncam CCcam 2>/dev/null; /etc/init.d/softcam start 2>/dev/null; echo 'Softcam restart executed'",
+        "10. Inspect Network Listening Ports": "netstat -tulpn 2>/dev/null || ss -tulpn 2>/dev/null || echo 'netstat not available'",
+        "11. Fast Restart Enigma2 GUI": "killall -9 enigma2",
+        "12. Complete Receiver Reboot": "sync && reboot",
     }
 }
 
@@ -511,7 +526,7 @@ class ZeroSatTerminalScreen(Screen):
         self["key_blue"] = Button("Scroll End")
 
         self["actions"] = ActionMap(
-            ["ColorActions", "SetupActions", "DirectionActions", "OkCancelActions"],
+            ["ColorActions", "SetupActions", "OkCancelActions"],
             {
                 "red": self.cancel_process,
                 "cancel": self.cancel_process,
@@ -652,26 +667,28 @@ class ZeroSatPluginsListScreen(Screen):
         self["hint_bar"] = Label("  Select an item and press [OK] or [GREEN] to launch live Terminal installer.")
 
         self["plugins_menu"] = MenuList(self.items_keys)
+        try:
+            self["plugins_menu"].onSelectionChanged.append(self.on_selection_changed)
+        except Exception:
+            pass
         self["preview_box_title"] = Label("Addon Preview")
         self["preview_box_desc"] = ScrollLabel()
         self["preview_box_cmd"] = ScrollLabel()
 
-        self["key_red"] = Button("Back / Return")
-        self["key_green"] = Button("Install (Terminal)")
-        self["key_yellow"] = Button("Quick Test")
-        self["key_blue"] = Button("Restart Enigma2")
+        self["key_red"] = Button("Back / رجوع")
+        self["key_green"] = Button("Install / تثبيت")
+        self["key_yellow"] = Button("Search / بحث")
+        self["key_blue"] = Button("Restart GUI")
 
         self["actions"] = ActionMap(
-            ["ColorActions", "SetupActions", "OkCancelActions", "DirectionActions"],
+            ["ColorActions", "SetupActions", "OkCancelActions"],
             {
                 "red": self.close,
                 "cancel": self.close,
                 "green": self.open_terminal_for_selected,
                 "ok": self.open_terminal_for_selected,
-                "yellow": self.open_terminal_for_selected,
+                "yellow": self.prompt_search,
                 "blue": self.restart_enigma2,
-                "up": self.on_selection_changed,
-                "down": self.on_selection_changed,
             },
         )
 
@@ -680,20 +697,51 @@ class ZeroSatPluginsListScreen(Screen):
     def on_selection_changed(self):
         self.update_preview()
 
+    def prompt_search(self):
+        try:
+            from Screens.InputBox import InputBox
+            self.session.openWithCallback(self.apply_search_filter, InputBox, title="Search Addons in " + str(self.category_name) + ":", text="")
+        except Exception:
+            # Fallback for images without InputBox
+            self.items_keys = sorted(list(self.items_dict.keys()))
+            self["plugins_menu"].setList(self.items_keys)
+            self["cat_count"].setText(str(len(self.items_keys)) + " Addons (All)")
+            self.update_preview()
+
+    def apply_search_filter(self, query=None):
+        if not query or not str(query).strip():
+            self.items_keys = sorted(list(self.items_dict.keys()))
+            self["cat_count"].setText(str(len(self.items_keys)) + " Addons (All)")
+        else:
+            q = str(query).strip().lower()
+            self.items_keys = sorted([k for k in self.items_dict.keys() if q in k.lower()])
+            self["cat_count"].setText(str(len(self.items_keys)) + " Filtered: " + str(query))
+        self["plugins_menu"].setList(self.items_keys)
+        self.update_preview()
+
     def update_preview(self):
         selected = self["plugins_menu"].getCurrent()
         if selected and selected in self.items_dict:
             cmd = self.items_dict[selected]
             self["preview_box_title"].setText(selected)
+            if self.category_name == "Local Tools & /tmp Installer":
+                type_desc = "Local Receiver Maintenance / File Tool"
+            else:
+                type_desc = "Online Addon Stream Installer"
             info = [
-                "Addon Name: " + str(selected),
-                "Section: " + str(self.category_name),
-                "Architecture: ARM / MIPS / All Python",
-                "Execution Mode: Live Terminal Stream",
-                "Press OK or GREEN key to execute live.",
+                "Name: " + str(selected),
+                "Category: " + str(self.category_name),
+                "Type: " + type_desc,
+                "Compatibility: Python 3.12, 3.11, 3.10, 3.9 & 2.7",
+                "Action: Press OK or GREEN to execute live in Terminal.",
+                "Tip: Press YELLOW to filter/search names."
             ]
             self["preview_box_desc"].setText("\n".join(info))
             self["preview_box_cmd"].setText("Terminal Command:\n" + str(cmd))
+        else:
+            self["preview_box_title"].setText("No Item Selected")
+            self["preview_box_desc"].setText("Press YELLOW to clear search filter and show all addons.")
+            self["preview_box_cmd"].setText("")
 
     def open_terminal_for_selected(self):
         selected = self["plugins_menu"].getCurrent()
@@ -746,9 +794,13 @@ class ZeroSatPanelMainScreen(Screen):
 
         self.categories_names = [c[0] for c in CATEGORIES]
         self["cat_menu"] = MenuList(self.categories_names)
+        try:
+            self["cat_menu"].onSelectionChanged.append(self.on_selection_changed)
+        except Exception:
+            pass
 
         self["brand_title"] = Label("ZERO-SAT PRO PANEL")
-        self["brand_sub"] = Label("Professional Addon Manager & Terminal Launcher (" + str(PLUGIN_VERSION) + ")")
+        self["brand_sub"] = Label("Professional Addon Manager & Terminal Launcher (v" + str(PLUGIN_VERSION) + ")")
         self["clock_label"] = Label("")
 
         self["sys_header"] = Label("RECEIVER SYSTEM TELEMETRY")
@@ -760,13 +812,13 @@ class ZeroSatPanelMainScreen(Screen):
         self["internet_status"] = Label(self.get_internet_status())
         self["cat_desc_box"] = ScrollLabel()
 
-        self["key_red"] = Button("Exit Panel")
-        self["key_green"] = Button("Open Section")
-        self["key_yellow"] = Button("Update Panel")
-        self["key_blue"] = Button("Restart Enigma2")
+        self["key_red"] = Button("Exit / خروج")
+        self["key_green"] = Button("Open / فتح")
+        self["key_yellow"] = Button("Self-Update")
+        self["key_blue"] = Button("Restart GUI")
 
         self["actions"] = ActionMap(
-            ["ColorActions", "SetupActions", "OkCancelActions", "DirectionActions"],
+            ["ColorActions", "SetupActions", "OkCancelActions"],
             {
                 "red": self.close,
                 "cancel": self.close,
@@ -774,8 +826,6 @@ class ZeroSatPanelMainScreen(Screen):
                 "ok": self.open_category,
                 "yellow": self.update_panel,
                 "blue": self.restart_enigma2,
-                "up": self.on_selection_changed,
-                "down": self.on_selection_changed,
             },
         )
 
@@ -814,10 +864,13 @@ class ZeroSatPanelMainScreen(Screen):
                     items_count = len(PLUGINS_BY_CATEGORY.get(name, {}))
                     info_text = (
                         "Category: " + str(name) + "\n\n" +
-                        "About Section:\n" + str(desc) + "\n\n" +
-                        "Available Packages: " + str(items_count) + " Addons\n\n" +
-                        "Status: Verified & ready for execution.\n" +
-                        "Press OK or GREEN key to enter and browse."
+                        "Description:\n" + str(desc) + "\n\n" +
+                        "Total Packages: " + str(items_count) + " Verified Addons\n" +
+                        "System Architecture: ARM / MIPS / Python " + str(sys.version.split()[0]) + "\n\n" +
+                        "Navigation:\n" +
+                        "  [OK] / [GREEN] : Open and explore addons\n" +
+                        "  [YELLOW]       : Instant search inside category\n" +
+                        "  [BLUE]         : Fast restart Enigma2 GUI"
                     )
                     self["cat_desc_box"].setText(info_text)
                     break
@@ -836,31 +889,85 @@ class ZeroSatPanelMainScreen(Screen):
         self.close()
 
     def get_receiver_model(self):
+        model_name = "Enigma2 STB"
+        for path in ["/proc/stb/info/model", "/proc/stb/info/boxtype", "/proc/stb/info/version", "/etc/hostname"]:
+            try:
+                if os.path.exists(path):
+                    with open(path, "r") as f:
+                        val = f.read().strip()
+                        if val:
+                            model_name = val.upper()
+                            break
+            except Exception:
+                continue
+
+        ip_addr = self.get_ip_address()
+        return "Box: " + str(model_name) + " | " + str(ip_addr)
+
+    def get_ip_address(self):
         try:
-            with open("/etc/hostname", "r") as f:
-                return "Box Model: " + str(f.read().strip())
+            import socket
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.settimeout(0.3)
+            s.connect(("8.8.8.8", 80))
+            ip = s.getsockname()[0]
+            s.close()
+            return "IP: " + str(ip)
         except Exception:
-            return "Box Model: Enigma2 Receiver"
+            return "IP: Connected"
 
     def get_image_info(self):
+        py_ver = "Py " + str(sys.version.split()[0])
+        distro = "Enigma2 OS"
         try:
-            with open("/etc/image-version", "r") as f:
-                for line in f:
-                    if "creator" in line.lower() or "distro" in line.lower():
-                        return line.strip().replace("creator=", "Image: ").replace("distro=", "Image: ")
-            return "Image: OpenATV / OpenPLi / Egami"
+            if os.path.exists("/etc/image-version"):
+                with open("/etc/image-version", "r") as f:
+                    for line in f:
+                        l = line.lower()
+                        if "distro=" in l or "creator=" in l or "version=" in l:
+                            parts = line.strip().split("=")
+                            if len(parts) > 1 and parts[1].strip():
+                                distro = parts[1].strip().capitalize()
+                                break
+            elif os.path.exists("/etc/issue"):
+                with open("/etc/issue", "r") as f:
+                    first = f.readline().strip()
+                    if first:
+                        distro = first.split()[0]
         except Exception:
-            return "Image: Enigma2 Linux OS"
+            pass
+        return "Image: " + str(distro) + " (" + py_ver + ")"
 
     def get_cpu_info(self):
+        cpu_name = "ARM/MIPS"
         try:
             with open("/proc/cpuinfo", "r") as f:
                 for line in f:
                     if "model name" in line:
-                        return "CPU: " + str(line.split(":")[1].strip())
-            return "CPU: ARM / MIPS Processor"
+                        cpu_name = line.split(":")[1].strip()
+                        break
+                    elif "Hardware" in line:
+                        cpu_name = line.split(":")[1].strip()
+                        break
         except Exception:
-            return "CPU: Multi-Core Processor"
+            pass
+
+        temp_str = ""
+        for path in ["/proc/stb/sensors/temp0/value", "/proc/stb/fp/temp_sensor", "/sys/class/thermal/thermal_zone0/temp"]:
+            try:
+                if os.path.exists(path):
+                    with open(path, "r") as f:
+                        val = f.read().strip()
+                        if val.isdigit():
+                            t = int(val)
+                            if t > 1000:
+                                t = t // 1000
+                            temp_str = " (" + str(t) + "°C)"
+                            break
+            except Exception:
+                continue
+
+        return "CPU: " + str(cpu_name)[:22] + temp_str
 
     def get_memory_info(self):
         try:
@@ -869,11 +976,13 @@ class ZeroSatPanelMainScreen(Screen):
                 for line in f:
                     if "MemTotal" in line:
                         mem_total = int(line.split()[1]) // 1024
-                    elif "MemFree" in line:
+                    elif "MemAvailable" in line:
+                        mem_free = int(line.split()[1]) // 1024
+                    elif "MemFree" in line and mem_free == 0:
                         mem_free = int(line.split()[1]) // 1024
                 return "RAM: " + str(mem_total) + " MB | Free: " + str(mem_free) + " MB"
         except Exception:
-            return "RAM: Memory Telemetry N/A"
+            return "RAM: Active"
 
     def get_storage_info(self):
         try:
@@ -882,13 +991,13 @@ class ZeroSatPanelMainScreen(Screen):
             free_storage = (statvfs.f_bfree * statvfs.f_frsize) // (1024 * 1024)
             return "Flash: " + str(total_storage) + " MB | Free: " + str(free_storage) + " MB"
         except Exception:
-            return "Flash: Storage Info N/A"
+            return "Flash: Storage Active"
 
     def get_internet_status(self):
         try:
-            return "Internet: Online (Connected)" if os.system("ping -c 1 8.8.8.8 > /dev/null 2>&1") == 0 else "Internet: Offline"
+            return "Network: Online (Connected)" if os.system("ping -c 1 -W 1 8.8.8.8 > /dev/null 2>&1") == 0 else "Network: Offline"
         except Exception:
-            return "Internet: Connected"
+            return "Network: Connected"
 
 
 # ==============================================================================
@@ -898,8 +1007,22 @@ class ZeroSatPanelMainScreen(Screen):
 # 2) Plugin Browser (قائمة البلوجينات)
 # 3) Extensions Menu (زر الإضافات الأزرق)
 # ==============================================================================
-def main(session, **kwargs):
-    session.open(ZeroSatPanelMainScreen)
+def main(session=None, **kwargs):
+    if session is None:
+        try:
+            import NavigationInstance
+            session = NavigationInstance.instance.session
+        except Exception:
+            pass
+    if session is not None:
+        try:
+            session.open(ZeroSatPanelMainScreen)
+        except Exception as e:
+            try:
+                from Screens.MessageBox import MessageBox
+                session.open(MessageBox, "ZERO-SAT Panel Startup Error:\n" + str(e), MessageBox.TYPE_ERROR)
+            except Exception:
+                pass
 
 def main_menu(menuid, **kwargs):
     if menuid == "mainmenu":
@@ -977,7 +1100,6 @@ if __name__ == "__main__":
     - Receiver Main Menu -> ZERO-SAT Pro Panel
 ========================================================================
 """)
-
 
 EOF_EMBEDDED_PLUGIN
     else

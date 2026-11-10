@@ -46,6 +46,7 @@ const CATEGORY_LIST = [
   { id: 'multiboot', name: 'Multiboot Managers', english: 'USB & Flash Image Boot', arabic: 'برامج الإقلاع المتعدد وتثبيت الصور', icon: HardDrive, count: ENIGMA_PLUGINS.filter(p => p.category === 'multiboot').length },
   { id: 'bootlogos', name: 'Bootlogos & Themes', english: 'Startup Screens & Banners', arabic: 'شاشات إقلاع الجهاز ومناسبات', icon: Sparkles, count: ENIGMA_PLUGINS.filter(p => p.category === 'bootlogos').length },
   { id: 'images', name: 'Receiver Images & Flash', english: 'Flash Online Images', arabic: 'روابط تحميل وتثبيت صور الفلاش الخام', icon: FolderGit2, count: ENIGMA_PLUGINS.filter(p => p.category === 'images').length },
+  { id: 'localtools', name: 'Local Tools & /tmp Installer', english: 'Offline /tmp & System Tools', arabic: 'تثبيت حزم IPK و Tar.gz المحلية وأدوات صيانة النظام', icon: Wrench, count: ENIGMA_PLUGINS.filter(p => p.category === 'localtools').length },
 ];
 
 export default function ZeroSatPanelViewer() {
