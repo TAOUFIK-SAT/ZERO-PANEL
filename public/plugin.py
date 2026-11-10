@@ -728,7 +728,7 @@ class ZeroSatPluginsListScreen(Screen):
 # ==============================================================================
 class ZeroSatPanelMainScreen(Screen):
     skin = """
-    <screen name="ZeroSatPanelMainScreen" position="center,center" size="1450,890" title="ZERO-SAT Pro Panel by Emil & Team" flags="wfNoBorder" backgroundColor="#070c14">
+    <screen name="ZeroSatPanelMainScreen" position="center,center" size="1450,890" title="TAOUFIK STORE" flags="wfNoBorder" backgroundColor="#070c14">
         <!-- Top Branding Header -->
         <widget name="brand_title" position="30,20" size="700,45" font="Bold;34" foregroundColor="#38bdf8" transparent="1" />
         <widget name="brand_sub" position="30,65" size="700,30" font="Regular;20" foregroundColor="#94a3b8" transparent="1" />
@@ -737,7 +737,7 @@ class ZeroSatPanelMainScreen(Screen):
         <!-- Category Menu List -->
         <widget name="cat_menu" position="30,115" size="680,675" scrollbarMode="showOnDemand" itemHeight="60" font="Bold;26" backgroundColor="#0f172a" foregroundColor="#f8fafc" foregroundColorSelected="#38bdf8" />
 
-        <!-- Receiver Telemetry & Hardware Info Panel -->
+        <!-- Receiver Telemetry and Hardware Info Panel -->
         <widget name="sys_header" position="740,115" size="670,42" font="Bold;24" foregroundColor="#38bdf8" backgroundColor="#1e293b" halign="center" />
         <widget name="receiver_model" position="740,162" size="670,38" font="Regular;22" backgroundColor="#111827" foregroundColor="#ffffff" halign="center" />
         <widget name="image_info" position="740,204" size="670,38" font="Regular;22" backgroundColor="#1e293b" foregroundColor="#ffffff" halign="center" />
