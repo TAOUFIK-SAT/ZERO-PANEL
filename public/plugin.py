@@ -1009,17 +1009,18 @@ class ZeroSatPanelMainScreen(Screen):
 
 
 # ==============================================================================
-# ENIGMA2 PLUGIN ENTRY DESCRIPTORS
+# ENIGMA2 PLUGIN ENTRY DESCRIPTORS (Python 3.12 / 3.11 / 2.7 Multi-Architecture)
 # Registers in:
-# 1) Main Menu (القائمة الرئيسية)
-# 2) Plugin Browser (قائمة البلوجينات)
-# 3) Extensions Menu (زر الإضافات الأزرق)
+# 1) Plugin Browser (قائمة البلوجينات - Menu -> Plugins)
+# 2) Extensions Menu (زر الإضافات الأزرق - Blue Button)
+# 3) Main Menu (القائمة الرئيسية - Main Menu)
 # ==============================================================================
 def main(session=None, **kwargs):
     if session is None:
         try:
-            import NavigationInstance
-            session = NavigationInstance.instance.session
+            from enigma import getDesktop
+            import Screens.InfoBar
+            session = Screens.InfoBar.InfoBar.instance.session
         except Exception:
             pass
     if session is not None:
@@ -1028,7 +1029,7 @@ def main(session=None, **kwargs):
         except Exception as e:
             try:
                 from Screens.MessageBox import MessageBox
-                session.open(MessageBox, "ZERO-SAT Panel Startup Error:\n" + str(e), MessageBox.TYPE_ERROR)
+                session.open(MessageBox, "خطأ في تشغيل متجر توفيق:\n" + str(e), MessageBox.TYPE_ERROR)
             except Exception:
                 pass
 
@@ -1038,51 +1039,54 @@ def main_menu(menuid, **kwargs):
     return []
 
 def Plugins(**kwargs):
-    if not IS_ENIGMA2_ENV:
+    try:
+        from Plugins.Plugin import PluginDescriptor
+    except Exception:
+        # Fallback if outside Enigma2
         return []
 
     descriptors = []
 
-    # 1. Plugin Browser Menu (Menu -> Plugins)
+    # 1. Plugin Browser Menu (Menu -> Plugins / قائمة البلوجينات)
     try:
         descriptors.append(
             PluginDescriptor(
-                name="TAOUFIK STORE",
-                description="متجر توفيق بايتون 3 (TAOUFIK STORE) - المتجر الرسمي المعتمد للإنيجما 2",
+                name="متجر توفيق (TAOUFIK STORE)",
+                description="متجر توفيق لإضافات إنيجما2 - Python 3.12 / 2.7",
                 where=PluginDescriptor.WHERE_PLUGINMENU,
                 icon="icon.png",
                 fnc=main,
             )
         )
-    except Exception:
-        pass
+    except Exception as e:
+        print("[TAOUFIK-STORE] WHERE_PLUGINMENU registration error:", e)
 
-    # 2. Extensions Quick Menu (Blue Button)
+    # 2. Extensions Quick Menu (Blue Button / الزر الأزرق)
     try:
         descriptors.append(
             PluginDescriptor(
-                name="TAOUFIK STORE",
-                description="متجر توفيق بايتون 3 - إضافات وبانلات الرسيفر",
+                name="متجر توفيق (TAOUFIK STORE)",
+                description="متجر توفيق لإضافات إنيجما2 بايتون 3",
                 where=PluginDescriptor.WHERE_EXTENSIONSMENU,
                 fnc=main,
             )
         )
-    except Exception:
-        pass
+    except Exception as e:
+        print("[TAOUFIK-STORE] WHERE_EXTENSIONSMENU registration error:", e)
 
     # 3. Receiver Main Menu (القائمة الرئيسية)
     try:
         if hasattr(PluginDescriptor, "WHERE_MENU"):
             descriptors.append(
                 PluginDescriptor(
-                    name="TAOUFIK STORE",
-                    description="متجر توفيق بايتون 3 (TAOUFIK STORE)",
+                    name="متجر توفيق (TAOUFIK STORE)",
+                    description="متجر توفيق لإضافات إنيجما2",
                     where=PluginDescriptor.WHERE_MENU,
                     fnc=main_menu,
                 )
             )
-    except Exception:
-        pass
+    except Exception as e:
+        print("[TAOUFIK-STORE] WHERE_MENU registration error:", e)
 
     return descriptors
 
