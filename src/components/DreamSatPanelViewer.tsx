@@ -29,9 +29,21 @@ import {
   Settings,
   Flame,
   Globe,
-  Monitor
+  Server,
+  Star,
+  PackageCheck,
+  Zap,
+  ArrowUpCircle,
+  LayoutGrid,
+  Activity,
+  Gauge
 } from 'lucide-react';
 import { ENIGMA_PLUGINS, EnigmaPluginItem } from '../enigmaPluginsData';
+import ServerManager from './ServerManager';
+import SoftcamConfigGenerator from './SoftcamConfigGenerator';
+import InstalledManager from './InstalledManager';
+import CategoryCardsGrid from './CategoryCardsGrid';
+import LiveStatsDashboard from './LiveStatsDashboard';
 
 interface CategoryItem {
   id: string;
@@ -58,12 +70,85 @@ const CATEGORY_LIST: CategoryItem[] = [
   { id: 'localtools', name: 'أدوات الصيانة وتثبيت /tmp', english: 'Offline /tmp & System Tools', arabic: 'تثبيت حزم IPK و Tar.gz المحلية وأدوات صيانة النظام', icon: Wrench, count: ENIGMA_PLUGINS.filter(p => p.category === 'localtools').length },
 ];
 
-export default function TaoufikStoreViewer() {
+interface TaoufikStoreViewerProps {
+  externalSearch?: string;
+  onSearchChange?: (query: string) => void;
+  selectedCategoryFromHeader?: string;
+  selectedPluginToInstall?: EnigmaPluginItem | null;
+  onClearSelectedPlugin?: () => void;
+}
+
+export default function TaoufikStoreViewer({
+  externalSearch,
+  onSearchChange,
+  selectedCategoryFromHeader,
+  selectedPluginToInstall,
+  onClearSelectedPlugin
+}: TaoufikStoreViewerProps = {}) {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [viewMode, setViewMode] = useState<'store' | 'classic' | 'code' | 'help'>('store');
+  const [viewMode, setViewMode] = useState<'store' | 'categories' | 'dashboard' | 'classic' | 'servers' | 'softcam' | 'installed' | 'code' | 'help'>('categories');
+  const [showLiveDashboard, setShowLiveDashboard] = useState<boolean>(true);
   const [copiedCmd, setCopiedCmd] = useState<string | null>(null);
-  
+
+  // Sync external search from header
+  useEffect(() => {
+    if (externalSearch !== undefined) {
+      setSearchQuery(externalSearch);
+      if (externalSearch.trim().length > 0 && viewMode === 'categories') {
+        setViewMode('store');
+      }
+    }
+  }, [externalSearch]);
+
+  // Sync external category selection
+  useEffect(() => {
+    if (selectedCategoryFromHeader) {
+      setSelectedCategory(selectedCategoryFromHeader);
+      setViewMode('store');
+    }
+  }, [selectedCategoryFromHeader]);
+
+  // Custom user plugins
+  const [customPlugins, setCustomPlugins] = useState<EnigmaPluginItem[]>(() => {
+    const saved = localStorage.getItem('taoufik_custom_plugins');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { return []; }
+    }
+    return [];
+  });
+
+  // Favorite plugin IDs
+  const [favoriteIds, setFavoriteIds] = useState<string[]>(() => {
+    const saved = localStorage.getItem('taoufik_favorite_plugins');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { return ['ajpanel', 'multistalkerpro', 'ciefp-panel']; }
+    }
+    return ['ajpanel', 'multistalkerpro', 'ciefp-panel'];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('taoufik_favorite_plugins', JSON.stringify(favoriteIds));
+  }, [favoriteIds]);
+
+  useEffect(() => {
+    localStorage.setItem('taoufik_custom_plugins', JSON.stringify(customPlugins));
+  }, [customPlugins]);
+
+  const toggleFavorite = (id: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setFavoriteIds(prev => {
+      const exists = prev.includes(id);
+      const next = exists ? prev.filter(x => x !== id) : [...prev, id];
+      showAlert(exists ? 'تمت إزالة الإضافة من المفضلة' : 'تمت إضافة الإضافة إلى المفضلة ⭐');
+      return next;
+    });
+  };
+
+  const handleAddCustomPlugin = (item: EnigmaPluginItem) => {
+    setCustomPlugins(prev => [item, ...prev]);
+  };
+
   // Receiver Hardware & State
   const [receiverIP, setReceiverIP] = useState<string>('192.168.1.105');
   const [receiverModel, setReceiverModel] = useState<string>('Vu+ Duo 4K SE');
@@ -85,9 +170,16 @@ export default function TaoufikStoreViewer() {
   const [classicSelectedCat, setClassicSelectedCat] = useState<string>('iptv');
   const [classicSelectedIdx, setClassicSelectedIdx] = useState<number>(0);
 
+  // All plugins combined
+  const allAvailablePlugins = [...customPlugins, ...ENIGMA_PLUGINS];
+
   // Filter plugins
-  const filteredPlugins = ENIGMA_PLUGINS.filter((item) => {
-    const matchesCat = selectedCategory === 'all' || item.category === selectedCategory;
+  const filteredPlugins = allAvailablePlugins.filter((item) => {
+    const matchesCat = 
+      selectedCategory === 'all' ? true :
+      selectedCategory === 'favorites' ? favoriteIds.includes(item.id) :
+      item.category === selectedCategory;
+
     const matchesSearch = 
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.command.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -96,7 +188,23 @@ export default function TaoufikStoreViewer() {
     return matchesCat && matchesSearch;
   });
 
-  // Auto-scroll terminal
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'iptv': return Tv;
+      case 'panels': return Layers;
+      case 'softcams': return Key;
+      case 'channels': return Sliders;
+      case 'multiboot': return HardDrive;
+      case 'plugins': return Wrench;
+      case 'skins': return Palette;
+      case 'tools': return Cpu;
+      case 'picons': return ImageIcon;
+      case 'bootlogos': return Sparkles;
+      case 'images': return FolderGit2;
+      case 'localtools': return Wrench;
+      default: return Terminal;
+    }
+  };
   useEffect(() => {
     if (isTerminalOpen && terminalEndRef.current) {
       terminalEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -179,6 +287,16 @@ export default function TaoufikStoreViewer() {
     });
   };
 
+  // Launch terminal if plugin selected from top header search
+  useEffect(() => {
+    if (selectedPluginToInstall) {
+      launchTerminal(selectedPluginToInstall);
+      if (onClearSelectedPlugin) {
+        onClearSelectedPlugin();
+      }
+    }
+  }, [selectedPluginToInstall]);
+
   return (
     <div className="space-y-5" dir="rtl">
       
@@ -234,8 +352,30 @@ export default function TaoufikStoreViewer() {
             
             {/* View Switchers */}
             <button 
+              onClick={() => setViewMode('dashboard')}
+              className={`px-3.5 py-2 rounded-xl text-xs flex items-center gap-2 font-extrabold transition cursor-pointer ${
+                viewMode === 'dashboard'
+                  ? 'bg-[#00e5ff] text-black shadow-lg shadow-cyan-500/10'
+                  : 'bg-[#182133] hover:bg-[#202c45] text-cyan-300 border border-cyan-500/40'
+              }`}
+            >
+              <Activity className="w-4 h-4" />
+              <span>لوحة الإحصائيات الحية</span>
+            </button>
+            <button 
+              onClick={() => setViewMode('categories')}
+              className={`px-3.5 py-2 rounded-xl text-xs flex items-center gap-2 font-extrabold transition cursor-pointer ${
+                viewMode === 'categories'
+                  ? 'bg-[#00e5ff] text-black shadow-lg shadow-cyan-500/10'
+                  : 'bg-[#182133] hover:bg-[#202c45] text-gray-300 border border-gray-700/50'
+              }`}
+            >
+              <LayoutGrid className="w-4 h-4" />
+              <span>بطاقات التصنيفات</span>
+            </button>
+            <button 
               onClick={() => setViewMode('store')}
-              className={`px-4 py-2 rounded-xl text-xs flex items-center gap-2 font-extrabold transition cursor-pointer ${
+              className={`px-3.5 py-2 rounded-xl text-xs flex items-center gap-2 font-extrabold transition cursor-pointer ${
                 viewMode === 'store'
                   ? 'bg-[#00e5ff] text-black shadow-lg shadow-cyan-500/10'
                   : 'bg-[#182133] hover:bg-[#202c45] text-gray-300 border border-gray-700/50'
@@ -246,7 +386,7 @@ export default function TaoufikStoreViewer() {
             </button>
             <button 
               onClick={() => setViewMode('classic')}
-              className={`px-4 py-2 rounded-xl text-xs flex items-center gap-2 font-bold transition cursor-pointer ${
+              className={`px-3.5 py-2 rounded-xl text-xs flex items-center gap-2 font-bold transition cursor-pointer ${
                 viewMode === 'classic'
                   ? 'bg-[#00e5ff] text-black shadow-lg shadow-cyan-500/10 font-extrabold'
                   : 'bg-[#182133] hover:bg-[#202c45] text-gray-300 border border-gray-700/50'
@@ -254,6 +394,39 @@ export default function TaoufikStoreViewer() {
             >
               <Layers className="w-4 h-4" />
               <span>القائمة الكلاسيكية</span>
+            </button>
+            <button 
+              onClick={() => setViewMode('servers')}
+              className={`px-3.5 py-2 rounded-xl text-xs flex items-center gap-2 font-bold transition cursor-pointer ${
+                viewMode === 'servers'
+                  ? 'bg-[#00e5ff] text-black shadow-lg shadow-cyan-500/10 font-extrabold'
+                  : 'bg-[#182133] hover:bg-[#202c45] text-cyan-300 border border-cyan-500/30'
+              }`}
+            >
+              <Server className="w-4 h-4 text-cyan-400" />
+              <span>إدارة الخوادم (M3U/XML)</span>
+            </button>
+            <button 
+              onClick={() => setViewMode('softcam')}
+              className={`px-3.5 py-2 rounded-xl text-xs flex items-center gap-2 font-bold transition cursor-pointer ${
+                viewMode === 'softcam'
+                  ? 'bg-[#00e5ff] text-black shadow-lg shadow-cyan-500/10 font-extrabold'
+                  : 'bg-[#182133] hover:bg-[#202c45] text-amber-300 border border-amber-500/30'
+              }`}
+            >
+              <Key className="w-4 h-4 text-amber-400" />
+              <span>مولد السوفتكام</span>
+            </button>
+            <button 
+              onClick={() => setViewMode('installed')}
+              className={`px-3.5 py-2 rounded-xl text-xs flex items-center gap-2 font-bold transition cursor-pointer ${
+                viewMode === 'installed'
+                  ? 'bg-[#00e5ff] text-black shadow-lg shadow-cyan-500/10 font-extrabold'
+                  : 'bg-[#182133] hover:bg-[#202c45] text-emerald-300 border border-emerald-500/30'
+              }`}
+            >
+              <PackageCheck className="w-4 h-4 text-emerald-400" />
+              <span>الحزم والمؤشرات</span>
             </button>
             <button 
               onClick={() => setViewMode('code')}
@@ -283,6 +456,22 @@ export default function TaoufikStoreViewer() {
 
         {/* Horizontal Category Chips */}
         <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-gray-800/80 text-xs overflow-x-auto pb-1">
+          {/* Favorites Filter Chip */}
+          <button
+            onClick={() => setSelectedCategory('favorites')}
+            className={`px-3 py-1.5 rounded-lg font-bold transition cursor-pointer shrink-0 text-xs flex items-center gap-1.5 ${
+              selectedCategory === 'favorites'
+                ? 'bg-amber-400 text-black shadow-md'
+                : 'bg-[#182133] hover:bg-[#202c45] text-amber-300 border border-amber-500/30'
+            }`}
+          >
+            <Star className={`w-3.5 h-3.5 ${selectedCategory === 'favorites' ? 'fill-black' : 'fill-amber-400'}`} />
+            <span>المفضلة</span>
+            <span className="text-[10px] px-1 rounded bg-black/20 font-mono">
+              {favoriteIds.length}
+            </span>
+          </button>
+
           {CATEGORY_LIST.map((c) => {
             const isSelected = selectedCategory === c.id;
             return (
@@ -297,7 +486,7 @@ export default function TaoufikStoreViewer() {
               >
                 <span>{c.name}</span>
                 <span className={`ml-1.5 text-[10px] px-1 rounded ${isSelected ? 'bg-black/20 text-black' : 'bg-slate-900 text-slate-400'}`}>
-                  {c.count}
+                  {c.id === 'all' ? allAvailablePlugins.length : c.count}
                 </span>
               </button>
             );
@@ -329,6 +518,50 @@ export default function TaoufikStoreViewer() {
             >
               <Radio className="w-3.5 h-3.5" />
               <span>فحص الاتصال</span>
+            </button>
+            <button 
+              onClick={() => setViewMode('servers')}
+              className={`text-xs px-3 py-1.5 rounded-lg border flex items-center gap-1.5 cursor-pointer transition ${
+                viewMode === 'servers'
+                  ? 'bg-emerald-500 text-black font-extrabold border-emerald-400 shadow-sm'
+                  : 'bg-[#182133] hover:bg-[#202c45] text-emerald-400 border-emerald-500/30'
+              }`}
+            >
+              <Server className="w-3.5 h-3.5" />
+              <span>خوادم M3U/XML</span>
+            </button>
+            <button 
+              onClick={() => setViewMode('softcam')}
+              className={`text-xs px-3 py-1.5 rounded-lg border flex items-center gap-1.5 cursor-pointer transition ${
+                viewMode === 'softcam'
+                  ? 'bg-amber-400 text-black font-extrabold border-amber-300 shadow-sm'
+                  : 'bg-[#182133] hover:bg-[#202c45] text-amber-300 border-amber-500/30'
+              }`}
+            >
+              <Key className="w-3.5 h-3.5" />
+              <span>مولد السوفتكام</span>
+            </button>
+            <button 
+              onClick={() => setViewMode('installed')}
+              className={`text-xs px-3 py-1.5 rounded-lg border flex items-center gap-1.5 cursor-pointer transition ${
+                viewMode === 'installed'
+                  ? 'bg-[#00e5ff] text-black font-extrabold border-cyan-400 shadow-sm'
+                  : 'bg-[#182133] hover:bg-[#202c45] text-cyan-300 border-cyan-500/30'
+              }`}
+            >
+              <PackageCheck className="w-3.5 h-3.5" />
+              <span>الحزم والمؤشرات</span>
+            </button>
+            <button 
+              onClick={() => setShowLiveDashboard(!showLiveDashboard)}
+              className={`text-xs px-3 py-1.5 rounded-lg border flex items-center gap-1.5 cursor-pointer transition font-bold ${
+                showLiveDashboard
+                  ? 'bg-[#00e5ff] text-black border-cyan-400 shadow-sm'
+                  : 'bg-[#182133] hover:bg-[#202c45] text-cyan-300 border-cyan-500/30'
+              }`}
+            >
+              <Activity className="w-3.5 h-3.5 animate-pulse" />
+              <span>{showLiveDashboard ? 'إخفاء لوحة الإحصائيات' : 'لوحة الإحصائيات الحية'}</span>
             </button>
           </div>
 
@@ -401,9 +634,71 @@ export default function TaoufikStoreViewer() {
         </div>
       </div>
 
-      {/* 3. VIEW 1: PLAY STORE VIEW (Grid of Cards) */}
+      {/* 2.5 LIVE STATISTICAL DASHBOARD SUBCOMPONENT */}
+      {showLiveDashboard && (
+        <LiveStatsDashboard
+          receiverIP={receiverIP}
+          receiverModel={receiverModel}
+          receiverImage={receiverImage}
+          onLaunchTerminal={(name, command) => {
+            launchTerminal({
+              id: 'stat-' + Date.now(),
+              name,
+              category: 'tools',
+              categoryName: 'لوحة الإحصائيات الحية',
+              command,
+              description: 'أمر صيانة النظام وتفريغ الذاكرة ومراقبة الأداء'
+            });
+          }}
+          onNotification={showAlert}
+          onGoToInstalled={() => setViewMode('installed')}
+        />
+      )}
+
+      {/* 3. VIEW: INTERACTIVE CATEGORY CARDS GRID */}
+      {viewMode === 'categories' && (
+        <CategoryCardsGrid
+          activeCategory={selectedCategory}
+          onSelectCategory={(catId) => {
+            setSelectedCategory(catId);
+            setViewMode('store');
+            showAlert(catId === 'all' ? 'عرض كافة الإضافات' : `تم الانتقال إلى قسم: ${CATEGORY_LIST.find(c => c.id === catId)?.name || catId}`);
+          }}
+          totalPluginsCount={allAvailablePlugins.length}
+        />
+      )}
+
+      {/* 4. VIEW 1: PLAY STORE VIEW (Grid of Cards) */}
       {viewMode === 'store' && (
         <div className="space-y-3">
+          {/* Active Category Banner if filtered */}
+          {selectedCategory !== 'all' && (
+            <div className="bg-[#131929] border border-cyan-500/30 rounded-xl p-3 flex flex-wrap justify-between items-center text-xs gap-2">
+              <div className="flex items-center gap-2">
+                <span className="text-gray-400">التصنيف المعروض حالياً:</span>
+                <span className="text-[#00e5ff] font-extrabold">
+                  {selectedCategory === 'favorites' ? 'المفضلة ⭐' : CATEGORY_LIST.find(c => c.id === selectedCategory)?.name || selectedCategory}
+                </span>
+                <span className="text-gray-400 font-mono text-[11px]">({filteredPlugins.length} إضافة)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setViewMode('categories')}
+                  className="bg-[#182133] hover:bg-[#202c45] text-cyan-300 border border-cyan-500/30 px-3 py-1 rounded-lg font-bold flex items-center gap-1.5 cursor-pointer text-xs"
+                >
+                  <LayoutGrid className="w-3.5 h-3.5" />
+                  <span>تغيير التصنيف</span>
+                </button>
+                <button
+                  onClick={() => setSelectedCategory('all')}
+                  className="bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1 rounded-lg cursor-pointer text-xs"
+                >
+                  عرض كافة الإضافات
+                </button>
+              </div>
+            </div>
+          )}
+
           <div className="flex justify-between items-center text-xs text-gray-400 px-1">
             <span>تم العثور على <b className="text-cyan-400 font-mono font-bold">{filteredPlugins.length}</b> حزمة في TAOUFIK STORE</span>
             <span className="text-[11px] text-gray-500 font-mono">Architecture: All E2 Images (Py 3.12 / 2.7)</span>
@@ -416,6 +711,7 @@ export default function TaoufikStoreViewer() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {filteredPlugins.map((pkg) => {
+                const PkgIcon = getCategoryIcon(pkg.category);
                 return (
                   <div 
                     key={pkg.id} 
@@ -423,8 +719,15 @@ export default function TaoufikStoreViewer() {
                   >
                     <div>
                       {/* Icon Box */}
-                      <div className="h-28 bg-[#0b0f19] rounded-xl flex items-center justify-center text-cyan-400 text-3xl mb-3 border border-gray-800/80 group-hover:border-cyan-500/30 transition">
-                        <Terminal className="w-10 h-10 text-cyan-400 group-hover:scale-110 transition duration-300" />
+                      <div className="relative h-28 bg-[#0b0f19] rounded-xl flex items-center justify-center text-cyan-400 text-3xl mb-3 border border-gray-800/80 group-hover:border-cyan-500/30 transition">
+                        <PkgIcon className="w-10 h-10 text-cyan-400 group-hover:scale-110 transition duration-300" />
+                        <button
+                          onClick={(e) => toggleFavorite(pkg.id, e)}
+                          className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/40 hover:bg-black/80 transition cursor-pointer"
+                          title={favoriteIds.includes(pkg.id) ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة'}
+                        >
+                          <Star className={`w-3.5 h-3.5 ${favoriteIds.includes(pkg.id) ? 'fill-amber-400 text-amber-400' : 'text-gray-500 hover:text-gray-300'}`} />
+                        </button>
                       </div>
 
                       <div className="flex items-center justify-between">
@@ -598,6 +901,61 @@ export default function TaoufikStoreViewer() {
             <div className="text-gray-500">... (انظر الملف الكامل في /public/plugin.py)</div>
           </div>
         </div>
+      )}
+
+      {/* 5. VIEW: SERVER MANAGER COMPONENT */}
+      {viewMode === 'servers' && (
+        <ServerManager 
+          receiverIP={receiverIP}
+          onLaunchTerminal={(name, command) => {
+            launchTerminal({
+              id: 'srv-' + Date.now(),
+              name,
+              category: 'iptv',
+              categoryName: 'خوادم M3U / XML',
+              command,
+              description: 'تثبيت وتحديث باقة القنوات الفضائية وملف البوكيه على جهاز الرسيفر'
+            });
+          }}
+          onNotification={showAlert}
+        />
+      )}
+
+      {/* 6. VIEW: SOFTCAM CONFIG GENERATOR */}
+      {viewMode === 'softcam' && (
+        <SoftcamConfigGenerator 
+          receiverIP={receiverIP}
+          onLaunchTerminal={(name, command) => {
+            launchTerminal({
+              id: 'softcam-' + Date.now(),
+              name,
+              category: 'softcams',
+              categoryName: 'مولد السوفتكام',
+              command,
+              description: 'تثبيت وتحديث ملفات التكوين والاشتراكات في مسار /etc/tuxbox/config/'
+            });
+          }}
+          onNotification={showAlert}
+        />
+      )}
+
+      {/* 7. VIEW: INSTALLED PACKAGES & ADVANCED TOOLS */}
+      {viewMode === 'installed' && (
+        <InstalledManager
+          receiverIP={receiverIP}
+          onLaunchTerminal={(name, command) => {
+            launchTerminal({
+              id: 'installed-' + Date.now(),
+              name,
+              category: 'tools',
+              categoryName: 'مدير الحزم والمؤشرات',
+              command,
+              description: 'إدارة وتحديث الحزم المثبتة وفحص الإشارة'
+            });
+          }}
+          onNotification={showAlert}
+          onAddCustomPlugin={handleAddCustomPlugin}
+        />
       )}
 
       {/* 6. LIVE TERMINAL MODAL */}
